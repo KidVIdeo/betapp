@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>בית המוזיקה | פורטל סגל תשפ"ז</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --sky-bg: #e0f2fe;
+            --sky-gradient: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+        }
+        
+        body { 
+            font-family: 'Heebo', sans-serif; 
+            background: var(--sky-gradient);
+            background-attachment: fixed;
+            color: #0f172a; 
+            overflow-x: hidden;
+        }
+
+        .glass-panel { 
+            background: rgba(255, 255, 255, 0.75); 
+            backdrop-filter: blur(16px); 
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.85); 
+            box-shadow: 0 10px 30px -10px rgba(0, 100, 200, 0.15);
+        }
+
+        .rainbow-card {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+            position: relative;
+            background-size: 200% 200%;
+            animation: gradientShift 5s ease infinite;
+            border: 2px solid white;
+        }
+        .rainbow-card:hover { 
+            transform: translateY(-6px) scale(1.02); 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); 
+            z-index: 10;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .teacher-ellipse {
+            border-radius: 9999px !important;
+            padding-left: 1.75rem;
+            padding-right: 1.75rem;
+        }
+
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: -1;
+            font-size: 1.5rem;
+            animation-name: floatUp;
+            animation-timing-function: linear;
+            animation-fill-mode: forwards;
+            opacity: 0;
+        }
+        .particle.burst {
+            z-index: 50;
+            animation-name: floatBurst;
+            animation-timing-function: ease-out;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes floatBurst {
+            0% { transform: translate(0, 0) scale(0.5) rotate(0deg); opacity: 1; }
+            100% { transform: translate(var(--x-drift), var(--y-drift)) scale(1.5) rotate(180deg); opacity: 0; }
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #7dd3fc; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #38bdf8; }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+        .calendar-day-header {
+            text-align: center;
+            font-weight: 800;
+            color: #0284c7;
+            padding: 8px 0;
+        }
+        .calendar-cell {
+            background: rgba(255,255,255,0.85);
+            border-radius: 12px;
+            min-height: 115px;
+            padding: 8px;
+            border: 1px solid rgba(255,255,255,0.9);
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .calendar-cell:hover {
+            background: white;
+            transform: scale(1.04);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            z-index: 10;
+            border-color: #7dd3fc;
+        }
+        .calendar-cell.other-month { opacity: 0.4; background: transparent; border: 1px dashed rgba(2, 132, 199, 0.2); }
+        .calendar-cell.today { border: 2px solid #0284c7; background: #f0f9ff; }
+        .event-badge {
+            font-size: 0.62rem;
+            padding: 3px 5px;
+            border-radius: 6px;
+            margin-top: 3px;
+            font-weight: 800;
+            line-height: 1.2;
+            word-break: break-word;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .event-holiday { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+        .event-halfday { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .event-concert { background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; }
+        .event-rehearsal { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+
+        .tab-btn {
+            position: relative;
+            transition: all 0.3s;
+        }
+        .tab-btn.active {
+            color: #0284c7;
+            font-weight: 900;
+        }
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: #0284c7;
+            border-radius: 4px 4px 0 0;
+        }
+    </style>
+</head>
+<body class="antialiased pb-20">
+
+    <header class="sticky top-0 z-40 glass-panel border-b border-white/40">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center py-4 gap-4">
+                <div class="flex items-center gap-4 hover-trigger">
+                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center shadow-lg text-white">
+                        <i data-lucide="music" class="w-8 h-8"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-black tracking-tight text-slate-800">בית המוזיקה <span class="font-light text-sky-600">כפר תבור</span></h1>
+                        <p class="text-sm font-bold text-sky-700 tracking-wider uppercase">פורטל סגל ההוראה | תשפ"ז</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-6 border-b border-sky-200/50 mt-2 md:mt-0 flex-wrap">
+                    <button onclick="switchTab('portal')" id="tab-portal" class="tab-btn active pb-2 text-lg text-slate-600 hover:text-sky-600 font-bold flex items-center gap-2">
+                        <i data-lucide="layout-grid" class="w-5 h-5"></i> המרחב שלי
+                    </button>
+                    <button onclick="switchTab('calendar')" id="tab-calendar" class="tab-btn pb-2 text-lg text-slate-600 hover:text-sky-600 font-bold flex items-center gap-2">
+                        <i data-lucide="calendar-days" class="w-5 h-5"></i> לוח שנה אקדמי
+                    </button>
+                    <a href="OgApp.html" class="pb-2 text-sm text-sky-800 hover:text-sky-900 font-bold flex items-center gap-1.5 bg-white/80 hover:bg-white px-4 py-1.5 rounded-full border border-sky-200 transition shadow-sm">
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i> חזור לאוגדן סגל
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- ======================= PORTAL TAB ======================= -->
+        <div id="view-portal" class="space-y-10 animate-fade-in">
+            
+            <section class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <a href="https://drive.google.com/file/d/1q0gDPy7ejMgw7LgwjZiA5pBNH3Zb8_GM/view" target="_blank" class="rainbow-card glass-panel p-4 rounded-3xl text-center flex flex-col items-center justify-center hover-trigger" style="background-image: linear-gradient(124deg, #ff9a9e, #fecfef, #ff9a9e);">
+                    <div class="w-11 h-11 bg-white/60 rounded-2xl flex items-center justify-center mb-2 text-pink-600"><i data-lucide="book-open" class="w-5 h-5"></i></div>
+                    <span class="text-xs font-black text-slate-800">מתווה עבודה</span>
+                </a>
+                <a href="https://drive.google.com/file/d/1MxWPDUdI6jwo5pTj1uoxHl75XEss88h9/view" target="_blank" class="rainbow-card glass-panel p-4 rounded-3xl text-center flex flex-col items-center justify-center hover-trigger" style="background-image: linear-gradient(124deg, #a1c4fd, #c2e9fb, #a1c4fd);">
+                    <div class="w-11 h-11 bg-white/60 rounded-2xl flex items-center justify-center mb-2 text-blue-600"><i data-lucide="file-check" class="w-5 h-5"></i></div>
+                    <span class="text-xs font-black text-slate-800">תקנון הרשמה</span>
+                </a>
+                <a href="https://drive.google.com/file/d/1k7dIX_cAGuGZNp75z1ME3fmy3lI6t4fD/view" target="_blank" class="rainbow-card glass-panel p-4 rounded-3xl text-center flex flex-col items-center justify-center hover-trigger" style="background-image: linear-gradient(124deg, #d4fc79, #96e6a1, #d4fc79);">
+                    <div class="w-11 h-11 bg-white/60 rounded-2xl flex items-center justify-center mb-2 text-emerald-600"><i data-lucide="help-circle" class="w-5 h-5"></i></div>
+                    <span class="text-xs font-black text-slate-800">שאלות נפוצות</span>
+                </a>
+                <a href="https://docs.google.com/spreadsheets/d/1O2WXjowawiAcgyyCU7Ee76fw0iBmXKjNgGPAYNC_CWs/edit?usp=sharing" target="_blank" class="rainbow-card glass-panel p-4 rounded-3xl text-center flex flex-col items-center justify-center hover-trigger" style="background-image: linear-gradient(124deg, #e8dff5, #fce4ec, #e8dff5);">
+                    <div class="w-11 h-11 bg-white/60 rounded-2xl flex items-center justify-center mb-2 text-purple-700"><i data-lucide="layout-dashboard" class="w-5 h-5"></i></div>
+                    <span class="text-xs font-black text-slate-800">שיבוץ חדרים</span>
+                </a>
+                <a href="https://www.kefar-tavor.org.il/page.php?type=classHug&id=1647&bc=AC4&ht=%D7%A8%D7%99%D7%A9%D7%95%D7%9D%20%D7%9C%D7%97%D7%95%D7%92%D7%99%20%D7%9E%D7%95%D7%A1%D7%99%D7%A7%D7%94#navbar" target="_blank" class="rainbow-card glass-panel p-4 rounded-3xl text-center flex flex-col items-center justify-center col-span-2 md:col-span-1 hover-trigger" style="background-image: linear-gradient(124deg, #ffecd2, #fcb69f, #ffecd2);">
+                    <div class="w-11 h-11 bg-white/60 rounded-2xl flex items-center justify-center mb-2 text-orange-600"><i data-lucide="user-plus" class="w-5 h-5"></i></div>
+                    <span class="text-xs font-black text-slate-800">הרשמה אונליין</span>
+                </a>
+            </section>
+
+            <section class="glass-panel p-8 rounded-[2.5rem]">
+                <div class="flex flex-col md:flex-row justify-between items-end md:items-center mb-8 gap-4 border-b border-slate-200 pb-4">
+                    <div>
+                        <h2 class="text-2xl font-black flex items-center gap-3 text-slate-800">
+                            <div class="p-2 bg-sky-100 rounded-xl text-sky-600"><i data-lucide="users" class="w-6 h-6"></i></div>
+                            יומני מורים אישיים (Google Sheets)
+                        </h2>
+                        <p class="text-xs text-slate-500 font-semibold mt-1">ממוין לפי סדר הא-ב של שמות המשפחה. לחצו על כרטיס המורה למעבר ישיר אל הגיליון האישי</p>
+                    </div>
+                    <div class="relative w-full md:w-64 hover-trigger">
+                        <input type="text" id="teacherSearch" placeholder="חיפוש מורה או כלי..." 
+                            class="w-full bg-white border border-slate-200 rounded-full py-2.5 px-10 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 font-bold placeholder-slate-400 text-slate-800">
+                        <i data-lucide="search" class="absolute right-3.5 top-3 text-slate-400 w-4 h-4"></i>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" id="teachersList">
+                    <script>
+                        const teachers = [
+                            { name: "גרינברג סופיה", desc: "פסנתר, פיתוח קול 🎹🎤", link: "https://docs.google.com/spreadsheets/d/10-oyEZ4MEyPpcMrkiD9h2Zwc8xfGtV2be5Ssf0Ryeck/edit?gid=1453492726#gid=1453492726", icon: "ג" },
+                            { name: "כהן אליעזר", desc: "בס, הרכבים, מפגשים 🎸", link: "https://docs.google.com/spreadsheets/d/1McmfTowf_7kBnRnEc8QFqSd5DQdIumrmO5j_-aFZPv0/edit?gid=1453492726#gid=1453492726", icon: "כ" },
+                            { name: "כהן נחשון", desc: "תופים, הרכבים, מפגשים 🥁", link: "https://docs.google.com/spreadsheets/d/1upkIOzAjVOWmB7dK1sNnYjCytMmDLBko0ruT4iZGIlk/edit?gid=1453492726#gid=1453492726", icon: "כ" },
+                            { name: "לוריא יהונתן", desc: "פסנתר, גיטרה 🎹🎸", link: "https://docs.google.com/spreadsheets/d/1x-cX9OookGe0dBPvYPj4stn7xCYj26Te_yaUZwWVDk8/edit?gid=1453492726#gid=1453492726", icon: "ל" },
+                            { name: "מז'יבובסקי נתן", desc: "פסנתר, גיטרה, הפקה 🎹🎸", link: "https://docs.google.com/spreadsheets/d/1Rm2YB3wEJ1GSrlYJ2SDzf_8WJJwccjOnuWQE7b0QR_I/edit?gid=1453492726#gid=1453492726", icon: "מ" },
+                            { name: "פלד אילן", desc: "גיטרה, הרכבים, מפגשים 🎸", link: "https://docs.google.com/spreadsheets/d/125MnKz33blI9K4KFGTnjvNci17VDMkKvsyxy16xEhp8/edit?gid=1453492726#gid=1453492726", icon: "פ" },
+                            { name: "רגימוב אריאל", desc: "חליל צד, כינור 🎻", link: "https://docs.google.com/spreadsheets/d/1cbbadzttSYEZzZ9YRuGKyh9y8u2PcB8t3_ul1U6i6V4/edit?gid=1453492726#gid=1453492726", icon: "ר" },
+                            { name: "רזומנייה אלינה", desc: "פיתוח קול 🎤", link: "https://docs.google.com/spreadsheets/d/1p5K4aNRByN4D60zuY_gFRHmizdpaNz6HNCeSA87l3Bk/edit?gid=1453492726#gid=1453492726", icon: "ר" },
+                            { name: "רייזמן סימונה", desc: "פסנתר, גיטרה, עוד, פיתוח קול, הפקה, הרכבים 🎶", link: "https://docs.google.com/spreadsheets/d/1-nNK6ZdRZt7QNijk83yg5SVAsBDY6oc4LsAGtQtskwg/edit?gid=1453492726#gid=1453492726", icon: "ר" },
+                            { name: "שמידע ארז", desc: "גיטרה, הרכבים, מפגשים 🎸", link: "https://docs.google.com/spreadsheets/d/150btgbXqkG524UFpK65CD_BSKSKksw7gIkJddtewHuo/edit?gid=1453492726#gid=1453492726", icon: "ש" }
+                        ];
+
+                        document.write(teachers.map((t, i) => {
+                            const hue1 = (i * (360 / teachers.length));
+                            const hue2 = (hue1 + 40) % 360;
+                            const hue3 = (hue1 + 80) % 360;
+                            const bgStyle = `background-image: linear-gradient(124deg, hsl(${hue1}, 85%, 85%), hsl(${hue2}, 85%, 85%), hsl(${hue3}, 85%, 85%));`;
+                            
+                            return `
+                                <a href="${t.link}" target="_blank" rel="noopener noreferrer" class="teacher-card teacher-ellipse rainbow-card px-6 py-4 flex justify-between items-center group hover-trigger" style="${bgStyle}">
+                                    <div class="flex items-center gap-3.5 min-w-0 pr-1">
+                                        <div class="w-12 h-12 rounded-full bg-white/75 flex-shrink-0 flex items-center justify-center text-slate-800 font-black text-xl shadow-sm border border-white/80">${t.icon}</div>
+                                        <div class="min-w-0">
+                                            <p class="font-black text-slate-900 text-lg leading-tight truncate">${t.name}</p>
+                                            <p class="text-xs font-bold text-slate-700 mt-1 leading-snug">${t.desc}</p>
+                                        </div>
+                                    </div>
+                                    <div class="w-8 h-8 rounded-full bg-white/40 flex items-center justify-center shrink-0 group-hover:bg-white group-hover:scale-110 transition mr-2">
+                                        <i data-lucide="external-link" class="w-4 h-4 text-slate-700"></i>
+                                    </div>
+                                </a>
+                            `;
+                        }).join(''));
+                    </script>
+                </div>
+            </section>
+        </div>
+
+        <!-- ======================= CALENDAR TAB ======================= -->
+        <div id="view-calendar" class="hidden animate-fade-in">
+            <section class="glass-panel p-6 sm:p-8 rounded-[2.5rem]">
+                
+                <div class="flex items-center justify-between mb-8 bg-white/50 p-4 rounded-2xl border border-white/80 shadow-sm hover-trigger">
+                    <button id="prevMonthBtn" class="p-2 md:px-4 md:py-2 bg-white rounded-xl shadow-sm hover:bg-sky-50 text-sky-700 font-bold transition flex items-center gap-2 border border-sky-100">
+                        <i data-lucide="chevron-right" class="w-5 h-5"></i><span class="hidden sm:inline">חודש קודם</span>
+                    </button>
+                    <h2 id="monthYearDisplay" class="text-2xl md:text-3xl font-black text-slate-800 text-center flex-1"></h2>
+                    <button id="nextMonthBtn" class="p-2 md:px-4 md:py-2 bg-white rounded-xl shadow-sm hover:bg-sky-50 text-sky-700 font-bold transition flex items-center gap-2 border border-sky-100">
+                        <span class="hidden sm:inline">חודש הבא</span><i data-lucide="chevron-left" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
+                <div class="calendar-grid bg-white/40 p-2 rounded-2xl border border-white/60">
+                    <div class="calendar-day-header">ראשון</div>
+                    <div class="calendar-day-header">שני</div>
+                    <div class="calendar-day-header">שלישי</div>
+                    <div class="calendar-day-header">רביעי</div>
+                    <div class="calendar-day-header">חמישי</div>
+                    <div class="calendar-day-header text-slate-400">שישי</div>
+                    <div class="calendar-day-header text-slate-400">שבת</div>
+                </div>
+                <div id="calendarDays" class="calendar-grid mt-2"></div>
+            </section>
+        </div>
+
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        const notes = ['🎵', '🎶', '🎸', '🎹', '🥁', '🎷', '🎻', '🎼', '🎤'];
+        function spawnParticle(x, y, isBurst = false) {
+            const p = document.createElement('div');
+            p.className = 'particle' + (isBurst ? ' burst' : '');
+            p.innerText = notes[Math.floor(Math.random() * notes.length)];
+            const posX = x + (Math.random() * 40 - 20);
+            const posY = y + (Math.random() * 20 - 10);
+            p.style.left = posX + 'px';
+            p.style.top = posY + 'px';
+            const duration = isBurst ? (1.5 + Math.random() * 1.5) : (6 + Math.random() * 6);
+            const yDrift = isBurst ? -(80 + Math.random() * 100) : 0;
+            const xDrift = (Math.random() - 0.5) * 120;
+            if (isBurst) {
+                p.style.setProperty('--x-drift', xDrift + 'px');
+                p.style.setProperty('--y-drift', yDrift + 'px');
+            }
+            p.style.animationDuration = duration + 's';
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), duration * 1000);
+        }
+        setInterval(() => {
+            spawnParticle(Math.random() * window.innerWidth, window.innerHeight + 20, false);
+        }, 1200);
+
+        document.addEventListener('mouseover', (e) => {
+            const target = e.target.closest('.hover-trigger');
+            if (target && !target.dataset.bursting) {
+                target.dataset.bursting = "true";
+                const rect = target.getBoundingClientRect();
+                for(let i=0; i<8; i++) {
+                    spawnParticle(rect.left + Math.random() * rect.width, rect.bottom - Math.random() * (rect.height/2), true);
+                }
+                setTimeout(() => target.dataset.bursting = "", 800);
+            }
+        });
+
+        document.getElementById('teacherSearch').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            document.querySelectorAll('.teacher-card').forEach(card => {
+                const text = card.innerText.toLowerCase();
+                card.style.display = text.includes(term) ? 'flex' : 'none';
+            });
+        });
+
+        function switchTab(tabId) {
+            document.getElementById('view-portal').style.display = tabId === 'portal' ? 'block' : 'none';
+            document.getElementById('view-calendar').style.display = tabId === 'calendar' ? 'block' : 'none';
+            document.getElementById('tab-portal').classList.toggle('active', tabId === 'portal');
+            document.getElementById('tab-calendar').classList.toggle('active', tabId === 'calendar');
+        }
+
+        const monthNames = ["ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"];
+        const monthPastelColors = [
+            '#fce7f3', '#ccfbf1', '#ffedd5', '#fae8ff', '#dbeafe', '#fef08a', 
+            '#fed7aa', '#f3f4f6', '#e0f2fe', '#fef3c7', '#d1fae5', '#e0e7ff'
+        ];
+
+        let currDate = new Date(2026, 8, 1);
+
+        const calendarEvents = [
+            { start: '2026-09-11', end: '2026-09-13', title: 'ראש השנה (חופש)', type: 'holiday' },
+            { start: '2026-09-20', end: '2026-09-21', title: 'יום כיפור (חופש)', type: 'holiday' },
+            { start: '2026-09-25', end: '2026-10-03', title: 'סוכות (חוגים כרגיל בחוה"מ)', type: 'halfday' },
+            
+            // November Rehearsals for Hanukkah
+            ...['2026-11-05', '2026-11-11', '2026-11-12', '2026-11-18', '2026-11-19', '2026-11-25', '2026-11-26'].map(d => ({ start: d, end: d, title: '🕎 חזרות למופע חנוכה', type: 'rehearsal' })),
+            
+            // December Rehearsals & Hanukkah Opening
+            ...['2026-12-01', '2026-12-03', '2026-12-05'].map(d => ({ start: d, end: d, title: '🕎 חזרות למופע חנוכה', type: 'rehearsal' })),
+            { start: '2026-12-06', end: '2026-12-06', title: '🌟 הופעת נבחרת הילדים והנוער (חנוכה)', type: 'concert' },
+            { start: '2026-12-06', end: '2026-12-12', title: 'חנוכה (חופש)', type: 'holiday' },
+
+            // January & February Mid-Year
+            ...['2027-01-03', '2027-01-04', '2027-01-07', '2027-01-12', '2027-01-14', '2027-01-20', '2027-01-21'].map(d => ({ start: d, end: d, title: '🎵 גיבוש הכנות וחזרות למופעי אמצע שנה', type: 'rehearsal' })),
+            { start: '2027-01-24', end: '2027-01-28', title: '🌟 מופעי אמצע שנה', type: 'concert' },
+            { start: '2027-02-01', end: '2027-02-04', title: '🌟 מופעי אמצע שנה', type: 'concert' },
+            { start: '2027-03-23', end: '2027-03-24', title: 'פורים (חוגים כרגיל)', type: 'halfday' },
+            
+            // Warriors Songs Rehearsals (Wednesdays & Saturdays in March & April)
+            ...['2027-03-03', '2027-03-06', '2027-03-10', '2027-03-13', '2027-03-17', '2027-03-20', '2027-03-27', '2027-03-31', '2027-04-03', '2027-04-07', '2027-04-10', '2027-04-14', '2027-04-17'].map(d => ({ start: d, end: d, title: '🎵 חזרות שירי לוחמים (ערב יוה"ז)', type: 'rehearsal' })),
+
+            { start: '2027-04-21', end: '2027-04-28', title: 'פסח (חופש)', type: 'holiday' },
+            { start: '2027-04-29', end: '2027-04-30', title: '🎵 חזרה לפעילות מלאה', type: 'concert' },
+
+            // May & June End of Year Prep (3 times a week)
+            ...['2027-05-02', '2027-05-05', '2027-05-06', '2027-05-09', '2027-05-13', '2027-05-16', '2027-05-17', '2027-05-18', '2027-05-19', '2027-05-20', '2027-05-23', '2027-05-24', '2027-05-25', '2027-05-26', '2027-05-27', '2027-05-30', '2027-05-31'].map(d => ({ start: d, end: d, title: '🎸 גיבוש, הכנות וחזרות למופע סוף שנה', type: 'rehearsal' })),
+            { start: '2027-05-03', end: '2027-05-03', title: 'ערב יום השואה', type: 'halfday' },
+            { start: '2027-05-10', end: '2027-05-10', title: 'ערב יוה"ז', type: 'halfday' },
+            { start: '2027-05-11', end: '2027-05-11', title: 'יום הזיכרון', type: 'holiday' },
+            { start: '2027-05-12', end: '2027-05-12', title: 'יום העצמאות', type: 'holiday' },
+
+            ...['2027-06-01', '2027-06-02', '2027-06-03', '2027-06-06', '2027-06-07', '2027-06-08', '2027-06-13', '2027-06-14', '2027-06-15', '2027-06-16', '2027-06-17', '2027-06-20', '2027-06-21', '2027-06-22', '2027-06-23', '2027-06-24', '2027-06-27', '2027-06-28', '2027-06-29', '2027-06-30'].map(d => ({ start: d, end: d, title: '🎸 גיבוש, הכנות וחזרות למופע סוף שנה', type: 'rehearsal' })),
+            { start: '2027-06-09', end: '2027-06-09', title: '⚽ מופע סוף שנה כדורי', type: 'concert' },
+            { start: '2027-06-10', end: '2027-06-10', title: '🌾 מופע שיר שירים וביכורים', type: 'concert' },
+            { start: '2027-06-10', end: '2027-06-12', title: 'שבועות', type: 'holiday' },
+
+            // July Rehearsals & Concert Dates
+            ...['2027-07-01', '2027-07-04', '2027-07-05', '2027-07-06', '2027-07-08', '2027-07-11', '2027-07-12', '2027-07-13', '2027-07-18', '2027-07-19', '2027-07-20', '2027-07-25', '2027-07-26', '2027-07-27'].map(d => ({ start: d, end: d, title: '🎸 חזרות למופע סוף שנה', type: 'rehearsal' })),
+            { start: '2027-07-07', end: '2027-07-07', title: '🎸 מופע סוף שנה', type: 'concert', customStyle: 'background:#ffe4e6;color:#e11d48;border:1px solid #f43f5e;' },
+            { start: '2027-07-14', end: '2027-07-14', title: '🎹 מופע סוף שנה', type: 'concert', customStyle: 'background:#ede9fe;color:#7c3aed;border:1px solid #8b5cf6;' },
+            { start: '2027-07-15', end: '2027-07-15', title: '🥁 מופע סוף שנה', type: 'concert', customStyle: 'background:#e0f2fe;color:#0284c7;border:1px solid #38bdf8;' },
+            { start: '2027-07-21', end: '2027-07-21', title: '🎻 מופע סוף שנה', type: 'concert', customStyle: 'background:#d1fae5;color:#059669;border:1px solid #34d399;' },
+            { start: '2027-07-22', end: '2027-07-22', title: '🎷 מופע סוף שנה', type: 'concert', customStyle: 'background:#fef3c7;color:#d97706;border:1px solid #fbbf24;' },
+            { start: '2027-07-29', end: '2027-07-29', title: '🎤 מופע סוף שנה', type: 'concert', customStyle: 'background:#fce7f3;color:#db2777;border:1px solid #f472b6;' }
+        ];
+
+        function renderCalendar() {
+            const year = currDate.getFullYear();
+            const month = currDate.getMonth();
+            document.getElementById('monthYearDisplay').innerText = `${monthNames[month]} ${year}`;
+            
+            const calendarSection = document.querySelector('#view-calendar .glass-panel');
+            if (calendarSection) {
+                calendarSection.style.background = monthPastelColors[month] || 'rgba(255,255,255,0.85)';
+            }
+            
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const prevMonthDays = new Date(year, month, 0).getDate();
+            
+            const grid = document.getElementById('calendarDays');
+            grid.innerHTML = '';
+
+            const today = new Date();
+            const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+
+            for (let i = firstDay - 1; i >= 0; i--) {
+                const cell = document.createElement('div');
+                cell.className = 'calendar-cell other-month';
+                cell.innerHTML = `<span class="font-bold text-slate-400">${prevMonthDays - i}</span>`;
+                grid.appendChild(cell);
+            }
+
+            for (let i = 1; i <= daysInMonth; i++) {
+                const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+                const cell = document.createElement('div');
+                cell.className = 'calendar-cell hover-trigger';
+                if(dateStr === todayStr) cell.classList.add('today');
+
+                let html = `<span class="font-black text-lg text-slate-800">${i}</span>`;
+                const dayEvents = calendarEvents.filter(ev => dateStr >= ev.start && dateStr <= ev.end);
+                dayEvents.forEach(ev => {
+                    if (ev.customStyle) {
+                        html += `<div class="event-badge" style="${ev.customStyle}">${ev.title}</div>`;
+                    } else {
+                        html += `<div class="event-badge event-${ev.type}">${ev.title}</div>`;
+                    }
+                });
+
+                cell.innerHTML = html;
+                grid.appendChild(cell);
+            }
+
+            const totalCells = firstDay + daysInMonth;
+            const remaining = (7 - (totalCells % 7)) % 7;
+            for (let i = 1; i <= remaining; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'calendar-cell other-month';
+                cell.innerHTML = `<span class="font-bold text-slate-400">${i}</span>`;
+                grid.appendChild(cell);
+            }
+        }
+
+        document.getElementById('prevMonthBtn').addEventListener('click', () => {
+            currDate.setMonth(currDate.getMonth() - 1);
+            renderCalendar();
+        });
+        document.getElementById('nextMonthBtn').addEventListener('click', () => {
+            currDate.setMonth(currDate.getMonth() + 1);
+            renderCalendar();
+        });
+
+        renderCalendar();
+    </script>
+</body>
+</html>

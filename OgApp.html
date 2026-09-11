@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>אוגדן מסמכים | בית המוזיקה</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Alpine.js (Required for the Guide Overlay) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.13.3/cdn.min.js" defer></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Heebo', 'sans-serif'],
+                    },
+                    colors: {
+                        music: {
+                            dark: '#0f0c20',
+                            card: 'rgba(30, 25, 55, 0.4)',
+                            border: 'rgba(255, 255, 255, 0.1)',
+                            accent1: '#f9a826',
+                            accent2: '#ff3366',
+                            accent3: '#20c997'
+                        },
+                        brand: {
+                            900: '#1e1b4b', 800: '#312e81', 600: '#4f46e5',
+                            500: '#6366f1', 400: '#818cf8', 100: '#e0e7ff', 50: '#eef2ff'
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'spin-slow': 'spin 12s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body.app-mode {
+            background-color: #0f0c20;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(255, 51, 102, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(32, 201, 151, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(249, 168, 38, 0.15) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, rgba(138, 43, 226, 0.15) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: #f8fafc;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .glass-circle {
+            background: var(--tw-colors-music-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--tw-colors-music-border);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .glass-circle:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(45, 35, 75, 0.8);
+        }
+
+        .list-item-glass {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease;
+        }
+        .list-item-glass:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateX(-5px);
+        }
+
+        .music-notes-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .note {
+            position: absolute;
+            opacity: 0.15;
+            animation: floatUp 15s linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.2; }
+            90% { opacity: 0.2; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+
+        .sparkle-note {
+            position: absolute;
+            pointer-events: none;
+            font-size: 4rem; 
+            transform: translate(-50%, -50%);
+            animation: popOut 2.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; 
+            opacity: 0;
+            z-index: 50;
+            text-shadow: 0 0 20px currentColor;
+        }
+        
+        @keyframes popOut {
+            0% { transform: translate(-50%, -50%) scale(0.2) rotate(0deg); opacity: 1; }
+            100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(2.5) rotate(var(--rot)); opacity: 0; }
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f0c20; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+        #guide-overlay { scroll-behavior: smooth; }
+        .glass-panel-guide {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.4);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+        .holiday-table th { background-color: #1e1b4b; color: white; padding: 12px; font-size: 0.9rem;}
+        .holiday-table td { padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem; color: #1e293b;}
+        .holiday-table tr:nth-child(even) td { background-color: #f8fafc; }
+        .holiday-table tr:hover td { background-color: #f1f5f9; }
+        .sheets-select {
+            appearance: none; background-color: #ffffff; border: 2px solid #e2e8f0;
+            border-radius: 6px; padding: 8px 36px 8px 12px; font-family: inherit; font-size: 0.95rem; font-weight: bold; color: #1e293b; cursor: pointer; width: 100%; transition: all 0.2s;
+        }
+        .sheets-select:focus { outline: none; border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2); }
+    </style>
+</head>
+<body class="app-mode antialiased font-sans selection:bg-pink-500 selection:text-white pb-20">
+
+    <div class="music-notes-bg" id="notes-container"></div>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12">
+        
+        <!-- Header -->
+        <header class="text-center mb-16 relative z-10">
+            <div class="inline-block relative mb-6 cursor-pointer group" onmouseenter="createSparkles(this)">
+                <div class="absolute inset-0 bg-gradient-to-r from-pink-500 via-purple-500 to-yellow-500 rounded-full blur-xl opacity-50 animate-pulse group-hover:opacity-80 transition-opacity"></div>
+                
+                <div class="relative w-48 h-48 md:w-56 md:h-56 mx-auto rounded-full border-4 border-white/20 shadow-[0_0_40px_rgba(255,51,102,0.3)] animate-float flex flex-col items-center justify-center bg-gradient-to-br from-[#2a224a] to-[#0f0c20] overflow-hidden group-hover:border-white/40 transition-all duration-500">
+                    <img src="Image_00Logo.jpg" alt="לוגו בית המוזיקה" class="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-500" onerror="this.src='https://placehold.co/400x400/2a224a/ffffff?text=LOGO'">
+                </div>
+            </div>
+            
+            <h1 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400 mb-4 tracking-tight">
+                אוגדן מסמכים לסגל
+            </h1>
+            <p class="text-xl text-gray-300 font-light mb-2">בית המוזיקה כפר תבור • תשפ״ז 2026-2027</p>
+            
+            <div class="max-w-2xl mx-auto mt-6 bg-white/5 border border-white/10 rounded-[3rem] p-6 backdrop-blur-sm shadow-xl">
+                <p class="text-gray-200 leading-relaxed">
+                    מורים/ות יקרים/ות, ברוכים/ות הבאים/ות לשנת הפעילות החדשה.<br>
+                    ריכזנו עבורכם/ן את כל המידע, הנהלים וההנחיות הנדרשים/ות לעבודה שוטפת ומוצלחת. 
+                    אתם/ן מתבקשים/ות לקרוא את המסמכים בעיון ולשמור את האפליקציה לשימוש עתידי.
+                </p>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-16 mb-24 justify-items-center" id="documents-grid">
+            <!-- Circular Cards injected by JavaScript -->
+        </div>
+
+        <section class="mt-20 mb-16 relative">
+            <div class="text-center mb-16 relative">
+                <h2 class="text-2xl md:text-3xl font-bold text-white relative z-10">ארגז כלים מקצועי</h2>
+                <div class="absolute -bottom-4 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-50 w-1/2 mx-auto"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Repertoire Card -->
+                <div class="glass-circle rounded-[3rem] p-8 relative overflow-hidden group" onmouseenter="createSparkles(this)">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-purple-500 opacity-70 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="flex flex-col items-center text-center gap-3 mb-6">
+                        <div class="p-4 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 shadow-lg mb-2">
+                            <i data-lucide="library" class="w-8 h-8 text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white">רפרטואר ותווים</h3>
+                    </div>
+                    <div class="space-y-3 w-full">
+                        <a href="https://drive.google.com/file/d/1Zkr5gQof9ra6r9-4JUC27I1s76o7bdiv/view?usp=drivesdk" target="_blank" class="list-item-glass flex items-center gap-3 p-4 rounded-[2rem] text-gray-200">
+                            <i data-lucide="book-open" class="w-5 h-5 text-indigo-400"></i>
+                            <span class="font-medium">IsReal Book (PDF)</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Apps Card -->
+                <div class="glass-circle rounded-[3rem] p-8 relative overflow-hidden group" onmouseenter="createSparkles(this)">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 to-blue-500 opacity-70 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="flex flex-col items-center text-center gap-3 mb-6">
+                        <div class="p-4 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 shadow-lg mb-2">
+                            <i data-lucide="smartphone" class="w-8 h-8 text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white">אפליקציות עזר</h3>
+                    </div>
+                    <div class="space-y-3 w-full">
+                        <a href="https://moises.ai/" target="_blank" class="list-item-glass flex items-center gap-3 p-4 rounded-[2rem] text-gray-200">
+                            <i data-lucide="mic-2" class="w-5 h-5 text-cyan-400"></i>
+                            <span class="font-medium">Moises</span>
+                        </a>
+                        <a href="https://www.songsterr.com/" target="_blank" class="list-item-glass flex items-center gap-3 p-4 rounded-[2rem] text-gray-200">
+                            <i data-lucide="guitar" class="w-5 h-5 text-blue-400"></i>
+                            <span class="font-medium">Songsterr</span>
+                        </a>
+                        <a href="https://www.tab4u.com/" target="_blank" class="list-item-glass flex items-center gap-3 p-4 rounded-[2rem] text-gray-200">
+                            <i data-lucide="music-4" class="w-5 h-5 text-indigo-400"></i>
+                            <span class="font-medium">Tab4U</span>
+                        </a>
+                        <a href="https://musescore.com/" target="_blank" class="list-item-glass flex items-center gap-3 p-4 rounded-[2rem] text-gray-200">
+                            <i data-lucide="edit" class="w-5 h-5 text-purple-400"></i>
+                            <span class="font-medium">MuseScore</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Streaming Card -->
+                <div class="glass-circle rounded-[3rem] p-8 relative overflow-hidden group" onmouseenter="createSparkles(this)">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 to-emerald-500 opacity-70 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="flex flex-col items-center text-center gap-3 mb-6">
+                        <div class="p-4 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 shadow-lg mb-2">
+                            <i data-lucide="radio" class="w-8 h-8 text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white">האזנה וסטרימינג</h3>
+                    </div>
+                    <div class="space-y-3 w-full">
+                        <a href="https://open.spotify.com/" target="_blank" class="list-item-glass flex items-center gap-3 p-4 rounded-[2rem] text-gray-200">
+                            <i data-lucide="headphones" class="w-5 h-5 text-green-400"></i>
+                            <span class="font-medium">Spotify</span>
+                        </a>
+                        <a href="https://music.youtube.com/" target="_blank" class="list-item-glass flex items-center gap-3 p-4 rounded-[2rem] text-gray-200">
+                            <i data-lucide="youtube" class="w-5 h-5 text-red-500"></i>
+                            <span class="font-medium">YouTube Music</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mt-28 mb-10 text-center">
+            <div class="inline-block relative mb-16">
+                <h2 class="text-2xl md:text-3xl font-bold text-white relative z-10">הציצו במידעון בית המוזיקה והיכנסו להרשמה</h2>
+                <div class="absolute -bottom-3 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-music-accent1 to-transparent opacity-50"></div>
+            </div>
+            
+            <div class="flex flex-col md:flex-row justify-center items-center gap-12 md:gap-20">
+                <a href="https://online.fliphtml5.com/OMADESIGNS/zzqc/#p=9" target="_blank" rel="noopener noreferrer" class="relative inline-block group" style="animation: float 6s ease-in-out infinite;" onmouseenter="createSparkles(this)">
+                    <div class="absolute inset-0 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full blur-xl opacity-30 group-hover:opacity-70 transition-opacity duration-500"></div>
+                    <img src="Image_01.jpg" alt="מידעון בית המוזיקה 1" class="relative w-64 h-64 md:w-80 md:h-80 object-cover bg-white p-4 rounded-full border-4 border-white/20 shadow-[0_0_40px_rgba(255,51,102,0.3)] group-hover:border-white/50 group-hover:scale-105 transition-all duration-300" onerror="this.src='https://placehold.co/400x400/fff/333?text=Image+1'">
+                </a>
+
+                <a href="https://www.kefar-tavor.org.il/page.php?type=matClass&id=800&m=145&ht=#navbar" target="_blank" rel="noopener noreferrer" class="relative inline-block group" style="animation: float 6s ease-in-out infinite; animation-delay: 2s;" onmouseenter="createSparkles(this)">
+                    <div class="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full blur-xl opacity-30 group-hover:opacity-70 transition-opacity duration-500"></div>
+                    <img src="Image_02.jpg" alt="מידעון בית המוזיקה 2" class="relative w-64 h-64 md:w-80 md:h-80 object-cover bg-white p-4 rounded-full border-4 border-white/20 shadow-[0_0_40px_rgba(32,201,151,0.3)] group-hover:border-white/50 group-hover:scale-105 transition-all duration-300" onerror="this.src='https://placehold.co/400x400/fff/333?text=Image+2'">
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <button onclick="openShareModal()" class="fixed bottom-6 right-6 z-40 bg-gradient-to-r from-music-accent2 to-purple-600 text-white p-4 rounded-full shadow-[0_0_20px_rgba(255,51,102,0.4)] hover:scale-105 transition-transform flex items-center gap-2 group" onmouseenter="createSparkles(this)">
+        <i data-lucide="share-2" class="w-6 h-6"></i>
+        <span class="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs transition-all duration-300 ease-in-out font-medium pr-0 group-hover:pr-2">
+            קישורים לשיתוף
+        </span>
+    </button>
+
+    <div id="share-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300">
+        <div class="glass-circle w-11/12 max-w-lg p-8 rounded-[3rem] relative transform scale-95 transition-transform duration-300 text-center flex flex-col max-h-[90vh]">
+            <button onclick="closeShareModal()" class="absolute top-6 left-6 text-gray-400 hover:text-white transition-colors z-20">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            <h3 class="text-2xl font-bold text-white mb-2 mt-4">קישורי הרשמה לשיתוף</h3>
+            <p class="text-sm text-gray-300 mb-6">מורים/ות יקרים/ות, בחרו את המסלול הרלוונטי. לחצו על סמל הוואטסאפ לשיתוף, או על סמל ההעתקה כדי להעתיק ללוח.</p>
+
+            <div class="flex-1 overflow-y-auto pr-2 custom-scrollbar text-right relative" id="share-links-container">
+                <!-- Links injected by JS -->
+            </div>
+        </div>
+    </div>
+
+    <div id="guide-overlay" class="fixed inset-0 z-[100] bg-slate-50 hidden overflow-y-auto text-slate-800" 
+         x-data="{ activeSection: 'intro' }" 
+         @scroll="
+            const sections = ['intro', 'sec1', 'sec2', 'sec3', 'sec4', 'sec5', 'sec6', 'sec7', 'sec8', 'holidays', 'checklist', 'contact'];
+            let current = 'intro';
+            for (const section of sections) {
+                const el = document.getElementById(section);
+                if (el && $el.scrollTop >= (el.offsetTop - 250)) { current = section; }
+            }
+            activeSection = current;
+         ">
+        
+        <!-- Close button for Overlay -->
+        <button onclick="closeGuideOverlay()" class="fixed top-6 left-6 z-[110] bg-white text-slate-800 px-5 py-3 rounded-full shadow-xl hover:bg-slate-100 hover:scale-105 transition-all border border-slate-200 flex items-center gap-3 font-bold">
+            <i data-lucide="arrow-right" class="w-5 h-5"></i>
+            חזור לאוגדן
+        </button>
+
+        <!-- Overlay Sidebar (Desktop) -->
+        <aside class="fixed right-0 top-0 h-screen w-72 bg-brand-900 text-slate-300 z-40 hidden md:flex flex-col shadow-2xl" dir="rtl">
+            <div class="p-8 pb-6 flex items-center gap-4 text-white border-b border-white/10">
+                <div class="bg-gradient-to-br from-brand-400 to-brand-600 p-2.5 rounded-xl shadow-lg shadow-brand-500/30">
+                    <i data-lucide="book-open" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-extrabold tracking-tight leading-none">בית המוזיקה</h1>
+                    <p class="text-xs text-brand-400 font-medium mt-1">מתווה והדרכה לסגל</p>
+                </div>
+            </div>
+            
+            <nav class="flex-1 p-4 space-y-1.5 mt-2 overflow-y-auto custom-scrollbar">
+                <a href="#intro" :class="activeSection === 'intro' ? 'bg-brand-800 text-white font-bold border-brand-400' : 'hover:bg-white/5 border-transparent'" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-all border-r-4">
+                    <span class="text-lg opacity-80">📖</span> מבוא והתחדשות
+                </a>
+                <a href="#sec1" :class="activeSection === 'sec1' ? 'bg-brand-800 text-white font-bold border-brand-400' : 'hover:bg-white/5 border-transparent'" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-all border-r-4">
+                    <span class="text-lg opacity-80">🤝</span> 1. רוח הצוות ויוזמה
+                </a>
+                <a href="#sec2" :class="activeSection === 'sec2' ? 'bg-brand-800 text-white font-bold border-brand-400' : 'hover:bg-white/5 border-transparent'" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-all border-r-4">
+                    <span class="text-lg opacity-80">🎸</span> 2. שגרה פדגוגית
+                </a>
+                <a href="#sec3" :class="activeSection === 'sec3' ? 'bg-brand-800 text-white font-bold border-brand-400' : 'hover:bg-white/5 border-transparent'" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-all border-r-4">
+                    <span class="text-lg opacity-80">❓</span> 3. קווים מנחים (FAQ)
+                </a>
+                <a href="#sec4" :class="activeSection === 'sec4' ? 'bg-brand-800 text-white font-bold border-brand-400' : 'hover:bg-white/5 border-transparent'" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-all border-r-4">
+                    <span class="text-lg opacity-80">💳</span> 4. אדמיניסטרציה
+                </a>
+                <a href="#sec5" :class="activeSection === 'sec5' ? 'bg-brand-800 text-white font-bold border-brand-400' : 'hover:bg-white/5 border-transparent'" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-all border-r-4">
+                    <span class="text-lg opacity-80">📱</span> 5. התנהלות תלמידים
+                </a>
+                <a href="#sec6" :class="activeSection === 'sec6' ? 'bg-brand-800 text-white font-bold border-brand-400' : 'hover:bg-white/5 border-transparent'" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-all border-r-4">
+                    <span class="text-lg opacity-80">🏫</span> 6. הכנת חדרים
+                </a>
+                <a href="#sec7" :class="activeSection === 'sec7' ? 'bg-brand-800 text-white font-bold border-brand-400' : 'hover:bg-white/5 border-transparent'" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-all border-r-4">
+                    <span class="text-lg opacity-80">🎛️</span> 7. גיליון נוכחות
+                </a>
+                <a href="#sec8" :class="activeSection === 'sec8' ? 'bg-brand-800 text-white font-bold border-brand-400' : 'hover:bg-white/5 border-transparent'" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-all border-r-4">
+                    <span class="text-lg opacity-80">⚠️</span> 8. נהלי חריגים
+                </a>
+                <div class="h-px bg-white/10 my-2"></div>
+                <a href="#holidays" :class="activeSection === 'holidays' ? 'bg-brand-800 text-white font-bold border-brand-400' : 'hover:bg-white/5 border-transparent'" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-all border-r-4">
+                    <span class="text-lg opacity-80">📅</span> נספח א': חופשות
+                </a>
+                <a href="#checklist" :class="activeSection === 'checklist' ? 'bg-brand-800 text-white font-bold border-brand-400' : 'hover:bg-white/5 border-transparent'" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-all border-r-4">
+                    <span class="text-lg opacity-80">✅</span> נספח ב': צ'ק-ליסט
+                </a>
+                <a href="#contact" :class="activeSection === 'contact' ? 'bg-brand-800 text-white font-bold border-brand-400' : 'hover:bg-white/5 border-transparent'" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-all border-r-4">
+                    <span class="text-lg opacity-80">📞</span> צרו קשר
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Overlay Main Content -->
+        <main class="md:mr-72 p-4 sm:p-8 md:p-12 pb-32 max-w-5xl mx-auto">
+            
+            <section id="intro" class="scroll-mt-10 mb-16 pt-10">
+                <div class="bg-gradient-to-br from-slate-900 to-brand-900 rounded-3xl p-8 sm:p-12 text-white shadow-2xl mb-8 relative overflow-hidden">
+                    <div class="relative z-10">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/20 border border-brand-400/30 text-brand-200 text-sm font-medium mb-6">
+                            <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></span></span>
+                            מעודכן לשנת הלימודים תשפ"ז
+                        </div>
+                        <h1 class="text-4xl sm:text-5xl font-extrabold mb-6 leading-tight">מדריך הזנת נתונים<br>ופורטל התנהלות</h1>
+                        <p class="text-brand-200 text-lg font-bold mb-4">צוות המורים/ות היקרים/ות,</p>
+                        <p class="text-slate-300 text-lg max-w-3xl leading-relaxed font-light mb-4">
+                            כאן תמצאו את ההרחבה המלאה לכל מסמכי האוגדן. מדריך זה מאגד את ההנחיות לשימוש בגיליון הנוכחות החדש, לוחות הזמנים, והתנהלות נכונה מול תלמידים. אנו מאמינים כי התקדמות אמיתית נשענת על סדר, בהירות ומטרה משותפת.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Guide Section 1 -->
+            <section id="sec1" class="scroll-mt-10 mb-16">
+                <h2 class="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3">
+                    <span class="text-4xl">🤝</span> 1. שיתוף פעולה מקצועי, יוזמה ורוח הצוות
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="glass-panel-guide p-6 rounded-2xl border-t-4 border-t-emerald-500 hover:-translate-y-1 transition-transform">
+                        <h3 class="font-bold text-slate-800 mb-2 text-lg">אחריות רוחבית ופיתוח קהילתי</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">הצלחת בית המוזיקה נשענת על היכולת שלנו לפעול כגוף אחד מתואם ומפרה. אנו מעודדים יוזמה, הצעת רעיונות חדשים והשתתפות פעילה בישיבות הצוות.</p>
+                    </div>
+                    <div class="glass-panel-guide p-6 rounded-2xl border-t-4 border-t-blue-500 hover:-translate-y-1 transition-transform">
+                        <h3 class="font-bold text-slate-800 mb-2 text-lg">מעקב מקצועי נוכח</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">מנהל בית המוזיקה יצטרף מדי פעם לשיעורים. <strong>חובה לשתף את התלמידים מראש</strong> בטאקט, ולהסביר שזו אינה בחינה אלא מעקב לשיפור פדגוגי מתמיד.</p>
+                    </div>
+                    <div class="glass-panel-guide p-6 rounded-2xl border-t-4 border-t-purple-500 hover:-translate-y-1 transition-transform">
+                        <h3 class="font-bold text-slate-800 mb-2 text-lg">תרבות ארגונית (העברת תלמידים)</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">במקרים של חוסר כימיה או כשנתקלים ב"תקרת זכוכית", באחריותכם להציף זאת בפני המנהל כדי לבחון העברה למורה אחר/ת לטובת התלמיד/ה.</p>
+                    </div>
+                    <div class="glass-panel-guide p-6 rounded-2xl border-t-4 border-t-amber-500 hover:-translate-y-1 transition-transform">
+                        <h3 class="font-bold text-slate-800 mb-2 text-lg">שקיפות ועדכון הדדי</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed">תקשורת פתוחה ובגובה העיניים היא הבסיס לעבודה מיטבית, למניעת בעיות מראש ולהענקת מעטפת תומכת ואיכותית לכל תלמיד/ה.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Guide Section 2 -->
+            <section id="sec2" class="scroll-mt-10 mb-16">
+                <h2 class="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3">
+                    <span class="text-4xl">🎸</span> 2. שגרה פדגוגית, הרכבים והופעות
+                </h2>
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-6 md:p-8 space-y-6">
+                        <div class="flex gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold">1</div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-lg">מועדי הופעות וחובת השתתפות</h3>
+                                <p class="text-slate-600 mt-1">מופעי אמצע השנה יתקיימו בסוף ינואר-תחילת פברואר. מופעי סוף השנה ייקבעו מראש לחודש יולי. יש ליידע תלמידים רלוונטיים.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold">2</div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-lg">האקו-סיסטם של ההופעות</h3>
+                                <p class="text-slate-600 mt-1">חשוב ליצור סביבה בה תלמידים רוצים להופיע. הופעה מעניקה יעד לתרגול, בונה ביטחון עצמי ומלמדת התמודדות בריאה עם קהל.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4 bg-brand-50 p-4 rounded-xl border border-brand-100">
+                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-brand-600 text-white flex items-center justify-center font-bold">3</div>
+                            <div>
+                                <h3 class="font-bold text-brand-900 text-lg">כלל פדגוגי חדש (זמני שיעור)</h3>
+                                <p class="text-brand-800 mt-1 font-medium">שיעורים בני 30 דקות יתאפשרו עד כיתה ג' (כולל). החל מכיתה ד', המבנה הפדגוגי יתבסס על שיעורים בני 45 דקות בלבד.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Guide Section 3 -->
+            <section id="sec3" class="scroll-mt-10 mb-16">
+                <h2 class="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3">
+                    <span class="text-4xl">❓</span> 3. קווים מנחים מתוך "שאלות נפוצות"
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="bg-white p-5 rounded-xl border border-slate-200">
+                        <h4 class="font-bold text-slate-800 mb-1">נוכחות הורים בשיעור</h4>
+                        <p class="text-slate-600 text-sm">ניתן לשבת בשיעורים הראשונים של צעירים עד להסתגלות, אך יש להימנע מנוכחות רציפה כדי לא לפגוע בעצמאות התלמיד/ה.</p>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl border border-slate-200">
+                        <h4 class="font-bold text-slate-800 mb-1">מדיניות ביטולים והשלמות</h4>
+                        <p class="text-slate-600 text-sm">ביטול מראש (מעל 24 שעות) מזכה בהשלמה תוך חודשיים. ביטול קצר מ-24 שעות מחויב במלואו ללא השלמה.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Guide Section 4 -->
+            <section id="sec4" class="scroll-mt-10 mb-16">
+                <h2 class="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3">
+                    <span class="text-4xl">💳</span> 4. אדמיניסטרציה ונהלי גבייה
+                </h2>
+                <div class="bg-gradient-to-r from-slate-800 to-brand-900 rounded-3xl p-8 text-white shadow-lg">
+                    <div class="flex items-center gap-3 mb-6 border-b border-white/20 pb-4">
+                        <span class="text-3xl">🚫</span>
+                        <h3 class="text-2xl font-bold">ניתוק מגע כלכלי מוחלט</h3>
+                    </div>
+                    <p class="text-slate-300 mb-6">כדי לשמור על מערכת יחסים מקצועית וחינוכית, אנו מפרידים לחלוטין את העיסוק הפיננסי מעבודת ההוראה. <strong>אין לנהל כל תקשורת</strong> מול תלמידים או הורים בנושאי כספים, חיובים, הנחות או זיכויים. הפנו אותם בנעימות ישירות למנהל.</p>
+                </div>
+            </section>
+
+            <!-- Guide Section 5 -->
+            <section id="sec5" class="scroll-mt-10 mb-16">
+                <h2 class="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3">
+                    <span class="text-4xl">📱</span> 5. התנהלות מול תלמידים ודיווח שוטף
+                </h2>
+                <div class="space-y-6">
+                    <div class="glass-panel-guide p-6 rounded-2xl border-r-4 border-r-brand-500">
+                        <h3 class="font-bold text-slate-800 mb-2">פניות לרישום וקליטת תלמידים חדשים</h3>
+                        <p class="text-slate-600 text-sm">כל פנייה מועברת ישירות למנהל. <strong>בשום מצב אין לשבץ או להתחיל ללמד לפני שהמנהל שוחח עם ההורים וביצע תיאום ציפיות.</strong></p>
+                    </div>
+                    <div class="glass-panel-guide p-6 rounded-2xl border-r-4 border-r-teal-500">
+                        <h3 class="font-bold text-slate-800 mb-2">אחריות לתיאומים ועדכונים בזמן אמת</h3>
+                        <p class="text-slate-600 text-sm">לאחר אישור הרישום, התיאומים הם באחריותכם. על כל שינוי בלו"ז חובה <strong>לעדכן את המנהל ישירות בוואטסאפ בזמן אמת</strong>.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Guide Section 6 -->
+            <section id="sec6" class="scroll-mt-10 mb-16">
+                <h2 class="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3">
+                    <span class="text-4xl">🏫</span> 6. הגעה והכנת חדרי לימוד
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 text-center">
+                        <div class="text-4xl mb-3">⏰</div>
+                        <h4 class="font-bold text-slate-800 mb-2">הגעה מוקדמת</h4>
+                        <p class="text-slate-600 text-sm">הגעה לפחות 20 דקות לפני תחילת השיעור הראשון להיערכות רגועה ובדיקת ציוד.</p>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 text-center">
+                        <div class="text-4xl mb-3">🧹</div>
+                        <h4 class="font-bold text-slate-800 mb-2">סדר וניקיון (החזרה למקור)</h4>
+                        <p class="text-slate-600 text-sm">החזרת החדר למצבו המקורי: כיבוי מגברים, החזרת כסאות ועמדות לטובת המורה הבא.</p>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 text-center">
+                        <div class="text-4xl mb-3">🛠️</div>
+                        <h4 class="font-bold text-slate-800 mb-2">מענה וטיפול בתקלות</h4>
+                        <p class="text-slate-600 text-sm">חסר משהו? ציוד נשבר? עדכנו מיד בוואטסאפ כדי שנוכל לתקן או להזמין במהרה.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Guide Section 7: Simulator -->
+            <section id="sec7" class="scroll-mt-10 mb-16" x-data="{ 
+                selectedStatus: 'התקיים',
+                statuses: {
+                    'התקיים': {
+                        icon: '✅', color: 'bg-emerald-100 text-emerald-900 border-emerald-300',
+                        desc: 'שיעור רגיל שהתקיים בפועל.', makeup: 'לא ❌', makeupClass: 'text-slate-500 font-medium', salary: 'כן (מלא) ✅', salaryClass: 'text-emerald-700 font-bold', billing: 'כן (מלא) ✅', billingClass: 'text-emerald-700 font-bold', interest: 'מצב רגיל. התלמיד מחויב והמורה מתוגמל כרגיל החודש.'
+                    },
+                    'לא התקיים': {
+                        icon: '❌', color: 'bg-red-100 text-red-900 border-red-300',
+                        desc: 'אי-הגעה ללא הודעה מוקדמת.', makeup: 'לא ❌', makeupClass: 'text-slate-500 font-medium', salary: 'כן (מלא) ✅', salaryClass: 'text-emerald-700 font-bold', billing: 'כן (מלא) ✅', billingClass: 'text-emerald-700 font-bold', interest: 'אי-הגעה ללא הודעה. הזמן שלך שווה כסף – שולם כרגיל.'
+                    },
+                    'בוטל באיחור': {
+                        icon: '⏰', color: 'bg-orange-100 text-orange-900 border-orange-300',
+                        desc: 'התלמיד ביטל בהתראה קצרה מדי.', makeup: 'לא ❌', makeupClass: 'text-slate-500 font-medium', salary: 'כן (מלא) ✅', salaryClass: 'text-emerald-700 font-bold', billing: 'כן (מלא) ✅', billingClass: 'text-emerald-700 font-bold', interest: 'ביטול מאוחר מחוץ לתקנון. שולם כרגיל.'
+                    },
+                    'בוטל בתיאום': {
+                        icon: '🤝', color: 'bg-blue-100 text-blue-900 border-blue-300',
+                        desc: 'ביטול שתואם מראש כחוק.', makeup: 'כן (+1) ל-60 יום', makeupClass: 'text-blue-700 font-bold', salary: 'כן (החודש) ✅', salaryClass: 'text-emerald-700 font-bold', billing: 'כן (החודש) ✅', billingClass: 'text-emerald-700 font-bold', interest: 'שולם החודש. תאמו השלמה תוך 60 יום.'
+                    },
+                    'בוטל באילוץ': {
+                        icon: '⚠️', color: 'bg-purple-100 text-purple-900 border-purple-300',
+                        desc: 'ביטול יזום מצד המורה.', makeup: 'כן (+1) ל-60 יום', makeupClass: 'text-purple-700 font-bold', salary: 'לא (0) ❌', salaryClass: 'text-red-600 font-bold', billing: 'לא (0) ❌', billingClass: 'text-slate-500 font-medium', interest: 'חובה לפעול לקיום ההשלמה, אחרת לא יתקבל שכר.'
+                    },
+                    'חג ומועד': {
+                        icon: '🌴', color: 'bg-pink-100 text-pink-900 border-pink-300',
+                        desc: 'חופש רשמי.', makeup: 'כן (+1) ל-60 יום', makeupClass: 'text-pink-700 font-bold', salary: 'לא (0) ❌', salaryClass: 'text-red-600 font-bold', billing: 'לא (0) ❌', billingClass: 'text-slate-500 font-medium', interest: 'כנל - באחריות המורה להשלים את החג לקבלת שכר.'
+                    },
+                    'השלמה': {
+                        icon: '🔄', color: 'bg-teal-100 text-teal-900 border-teal-300',
+                        desc: 'קיום שיעור ההשלמה היום.', makeup: 'מקזז 1 מהיתרה 📉', makeupClass: 'text-teal-700 font-bold', salary: 'תלוי בביטול*', salaryClass: 'text-teal-700 font-bold', billing: 'תלוי בביטול*', billingClass: 'text-teal-700 font-bold', interest: '*המערכת מחשבת שכר בהתאם לביטול המקורי.'
+                    },
+                    'בוטל בדיעבד': {
+                        icon: '🗑️', color: 'bg-slate-200 text-slate-800 border-slate-300',
+                        desc: 'סגירה אדמיניסטרטיבית של השלמה פתוחה שלא תתקיים (פג תוקף / סירוב).', makeup: 'מקזז 1 מהיתרה 📉', makeupClass: 'text-slate-700 font-bold', salary: 'ללא השפעה ➖', salaryClass: 'text-slate-500 font-medium', billing: 'ללא השפעה ➖', billingClass: 'text-slate-500 font-medium', interest: 'פעולת קיזוז בלבד. מוריד 1 מיתרת ההשלמות הפתוחות ללא חיוב או תשלום נוסף.'
+                    }
+                }
+            }">
+                <h2 class="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3">
+                    <span class="text-4xl">🎛️</span> 7. סימולטור גיליון נוכחות
+                </h2>
+                
+                <p class="text-slate-600 mb-6 font-medium bg-brand-50 p-4 rounded-lg">חובה להזין את הגיליון באופן יומיומי! התנסו בסימולטור כדי להבין איך כל סטטוס משפיע על השכר שלכם ועל היתרות:</p>
+
+                <div class="glass-panel-guide rounded-3xl p-6 sm:p-10 border border-slate-200">
+                    <div class="flex flex-col lg:flex-row gap-10">
+                        <div class="lg:w-1/3 flex flex-col justify-center border-b lg:border-b-0 lg:border-l border-slate-200 pb-8 lg:pb-0 lg:pl-10 relative">
+                            <div class="bg-slate-50 border-2 border-slate-200 rounded-xl p-5 shadow-sm relative z-10">
+                                <label class="block text-sm font-bold text-slate-700 mb-2">בחרו סטטוס לדוגמה:</label>
+                                <select x-model="selectedStatus" class="sheets-select text-lg">
+                                    <template x-for="(data, status) in statuses" :key="status">
+                                        <option :value="status" x-text="data.icon + ' ' + status"></option>
+                                    </template>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="lg:w-2/3 flex flex-col justify-center">
+                            <div class="inline-flex items-center gap-3 px-4 py-2 rounded-xl border-2 mb-6 w-max transition-colors duration-300" :class="statuses[selectedStatus].color">
+                                <span class="text-2xl" x-text="statuses[selectedStatus].icon"></span>
+                                <h3 class="font-extrabold text-xl" x-text="selectedStatus"></h3>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 mb-6">
+                                <div>
+                                    <div class="text-sm font-bold text-slate-400 mb-1 uppercase tracking-wide">משמעות הסטטוס</div>
+                                    <div class="text-slate-800 font-medium" x-text="statuses[selectedStatus].desc"></div>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-bold text-slate-400 mb-1 uppercase tracking-wide">האם נוצרת השלמה?</div>
+                                    <div class="text-lg" :class="statuses[selectedStatus].makeupClass" x-text="statuses[selectedStatus].makeup"></div>
+                                </div>
+                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                    <div class="text-sm font-bold text-slate-400 mb-1 uppercase tracking-wide">שכר למורה (החודש)</div>
+                                    <div class="text-xl" :class="statuses[selectedStatus].salaryClass" x-text="statuses[selectedStatus].salary"></div>
+                                </div>
+                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                    <div class="text-sm font-bold text-slate-400 mb-1 uppercase tracking-wide">חיוב לתלמיד (החודש)</div>
+                                    <div class="text-xl" :class="statuses[selectedStatus].billingClass" x-text="statuses[selectedStatus].billing"></div>
+                                </div>
+                            </div>
+
+                            <div class="mt-2 p-4 rounded-xl border-l-4 transition-colors duration-300" :class="(selectedStatus === 'בוטל באילוץ' || selectedStatus === 'חג ומועד') ? 'bg-red-50 border-red-500 text-red-900' : 'bg-brand-50 border-brand-500 text-brand-900'">
+                                <div class="flex items-start gap-3">
+                                    <div class="mt-0.5 text-lg">💡</div>
+                                    <div>
+                                        <div class="text-xs font-bold mb-1 opacity-70 uppercase tracking-wide">הערה / נוהל אחריות:</div>
+                                        <div class="text-sm md:text-base font-medium" x-html="statuses[selectedStatus].interest"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Guide Section 8 -->
+            <section id="sec8" class="scroll-mt-10 mb-16">
+                <h2 class="text-3xl font-extrabold text-slate-800 mb-8 flex items-center gap-3">
+                    <span class="text-4xl">⚠️</span> 8. נהלי חריגים: עזיבה, ביטולים וסיום שנה
+                </h2>
+                <div class="space-y-4">
+                    <div class="bg-white p-5 rounded-xl border border-slate-200">
+                        <h4 class="font-bold text-slate-800 text-lg mb-2">נוהל פרישה שוטפת ופרישה חריגה</h4>
+                        <p class="text-slate-600 text-sm mb-2">הודעה נמסרת בכתב למייל. נדרשת <strong>הודעה מוקדמת של 30 יום</strong>, שבמהלכה יחויב התלמיד בחודש מלא גם אם לא יגיע.</p>
+                    </div>
+                    <div class="bg-red-50 p-5 rounded-xl border border-red-200">
+                        <h4 class="font-bold text-red-800 text-lg mb-2 flex items-center gap-2">🛑 תאריך סף (30 באפריל)</h4>
+                        <p class="text-red-700 text-sm">החל מ-<strong>1 במאי 2027</strong>, כל הודעת עזיבה תגרור חיוב עד תום שנת הלימודים.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Holidays Section -->
+            <section id="holidays" class="scroll-mt-10 mb-16">
+                <h2 class="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3">
+                    <span class="text-4xl">📅</span> נספח א': לוח חופשות ומועדים
+                </h2>
+                <div class="overflow-x-auto rounded-2xl border border-slate-200 shadow-sm">
+                    <table class="w-full text-right text-sm holiday-table whitespace-nowrap">
+                        <thead>
+                            <tr>
+                                <th>חג / מועד</th>
+                                <th>תאריך לועזי</th>
+                                <th>סטטוס פעילות</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="font-bold">ראש השנה</td><td>11-13.09.2026</td><td class="font-medium text-red-600">🔴 חופש</td></tr>
+                            <tr><td class="font-bold">יום כיפור</td><td>20-21.09.2026</td><td class="font-medium text-red-600">🔴 חופש</td></tr>
+                            <tr><td class="font-bold">סוכות וחול המועד</td><td>25.09-03.10.2026</td><td class="font-medium text-green-700">🟢 חוגים מתקיימים בחול המועד</td></tr>
+                            <tr><td class="font-bold">חנוכה</td><td>06-12.12.2026</td><td class="font-medium text-red-600">🔴 חופש</td></tr>
+                            <tr><td class="font-bold">פורים</td><td>23-24.03.2027</td><td class="font-medium text-green-700">🟢 מתקיים כרגיל</td></tr>
+                            <tr><td class="font-bold">פסח וחוה"מ</td><td>21-28.04.2027</td><td class="font-medium text-red-600">🔴 חופש</td></tr>
+                            <tr><td class="font-bold">יום הזיכרון/העצמאות</td><td>11-12.05.2027</td><td class="font-medium text-red-600">🔴 חופש</td></tr>
+                            <tr><td class="font-bold">שבועות</td><td>10-12.06.2027</td><td class="font-medium text-red-600">🔴 חופש</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Checklist Section -->
+            <section id="checklist" class="scroll-mt-10 mb-16">
+                <h2 class="text-3xl font-extrabold text-slate-800 mb-6 flex items-center gap-3">
+                    <span class="text-4xl">✅</span> נספח ב': צ'ק-ליסט סגירת חודש (ה-23 בחודש)
+                </h2>
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-2">
+                    <label class="flex items-start gap-4 p-4 hover:bg-slate-50 rounded-xl cursor-pointer transition-colors border border-transparent hover:border-slate-200">
+                        <input type="checkbox" class="w-6 h-6 mt-1 text-brand-600 rounded-md focus:ring-brand-500 cursor-pointer accent-brand-600">
+                        <span class="text-slate-700"><strong class="block text-slate-900 text-lg mb-1">1. בדיקת נוכחות מלאה</strong> וידאתי שכל השיעורים שהתקיימו עד כה מסומנים.</span>
+                    </label>
+                    <label class="flex items-start gap-4 p-4 hover:bg-slate-50 rounded-xl cursor-pointer transition-colors border border-transparent hover:border-slate-200">
+                        <input type="checkbox" class="w-6 h-6 mt-1 text-brand-600 rounded-md focus:ring-brand-500 cursor-pointer accent-brand-600">
+                        <span class="text-slate-700"><strong class="block text-slate-900 text-lg mb-1">2. הערכת סוף חודש (קריטי!)</strong> שיבצתי מראש "התקיים" לימים שנותרו עד סוף החודש.</span>
+                    </label>
+                    <label class="flex items-start gap-4 p-4 hover:bg-slate-50 rounded-xl cursor-pointer transition-colors border border-transparent hover:border-slate-200">
+                        <input type="checkbox" class="w-6 h-6 mt-1 text-brand-600 rounded-md focus:ring-brand-500 cursor-pointer accent-brand-600">
+                        <span class="text-slate-700"><strong class="block text-slate-900 text-lg mb-1">3. חתימה דיגיטלית</strong> הקלדתי את שמי כאישור סופי.</span>
+                    </label>
+                </div>
+            </section>
+            
+            <!-- Contact Section -->
+            <section id="contact" class="scroll-mt-10 mb-16">
+                <div class="bg-slate-900 rounded-3xl p-8 sm:p-12 text-center text-white relative overflow-hidden shadow-2xl">
+                    <div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-brand-400 via-slate-900 to-slate-900"></div>
+                    <div class="relative z-10">
+                        <div class="text-5xl mb-6">💬</div>
+                        <h2 class="text-3xl font-extrabold mb-4">צרו קשר</h2>
+                        <h3 class="text-xl font-bold text-brand-300 mb-2">תקשורת ותמיכה</h3>
+                        <p class="text-slate-300 text-lg mb-3 max-w-2xl mx-auto">יש בעיה? משהו התקלקל? יש ספק? אין ספק!</p>
+                        <p class="text-slate-400 text-base mb-2">בכל מקרה - שלחו הודעת וואטסאפ למנהל. במקרה פחות דחוף - שלחו דוא"ל</p>
+                        <p class="text-sm font-semibold text-brand-400 mb-8">לעדכון ושיתוף הסגל</p>
+
+                        <div class="flex flex-col sm:flex-row justify-center items-center gap-4 flex-wrap mb-10">
+                            <a href="https://wa.me/?text=שלום מנהל בית המוזיקה, פנייה בנושא:" target="_blank" class="w-full sm:w-auto flex items-center justify-center gap-3 bg-[#25D366] hover:bg-[#1ebd5a] text-white px-8 py-4 rounded-2xl font-bold text-lg transition-transform hover:scale-105 shadow-lg">
+                                <i data-lucide="message-circle" class="w-6 h-6"></i>
+                                הודעה למנהל (WhatsApp)
+                            </a>
+                            <a href="https://chat.whatsapp.com/invite/staff-group" target="_blank" class="w-full sm:w-auto flex items-center justify-center gap-3 bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-4 rounded-2xl font-bold text-lg transition-transform hover:scale-105 shadow-lg">
+                                <i data-lucide="users" class="w-6 h-6"></i>
+                                קבוצת הוואטסאפ של הסגל
+                            </a>
+                            <a href="mailto:musictavor@kt.matnasim.co.il" class="w-full sm:w-auto flex items-center justify-center gap-3 bg-brand-600 hover:bg-brand-500 text-white px-8 py-4 rounded-2xl font-bold text-lg transition-transform hover:scale-105 shadow-lg">
+                                <i data-lucide="mail" class="w-6 h-6"></i>
+                                שליחת דוא"ל משרדי
+                            </a>
+                        </div>
+
+                        <!-- Glowing Motivational Callout -->
+                        <div class="mt-6 p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
+                            <p class="text-xl md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-300 to-yellow-400 animate-pulse drop-shadow-[0_0_20px_rgba(255,255,255,0.6)]">
+                                הכי חשוב: שמרו על קשר עם הסגל, עדכנו תמיד, התייעצו, ספרו, שתפו!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const documents = [
+            {
+                id: 1,
+                title: 'מתווה התנהלות, הוראה ועבודה סדירה',
+                description: 'הנחיות, נהלי הגעה ונוכחות, ושימוש נכון בציוד ובחדרים.',
+                link: 'https://drive.google.com/file/d/1q0gDPy7ejMgw7LgwjZiA5pBNH3Zb8_GM/view?usp=drive_link',
+                icon: 'book-open',
+                gradient: 'from-blue-500 to-cyan-400'
+            },
+            {
+                id: 2,
+                title: 'תקנון הרשמה בית המוזיקה',
+                description: 'נהלי הרישום, התשלומים ותנאי הביטול למתן מענה ראשוני.',
+                link: 'https://drive.google.com/file/d/1MxWPDUdI6jwo5pTj1uoxHl75XEss88h9/view?usp=drive_link',
+                icon: 'file-signature',
+                gradient: 'from-emerald-500 to-teal-400'
+            },
+            {
+                id: 3,
+                title: 'שאלות נפוצות (FAQ) - כללי',
+                description: 'תשובות לשאלות אדמיניסטרטיביות שכיחות של הורים.',
+                link: 'https://drive.google.com/file/d/1k7dIX_cAGuGZNp75z1ME3fmy3lI6t4fD/view?usp=drive_link',
+                icon: 'help-circle',
+                gradient: 'from-purple-500 to-pink-500'
+            },
+            {
+                id: 4,
+                title: 'שאלות נפוצות (FAQ) - פדגוגי',
+                description: 'שיטות הוראה, אתגרים פדגוגיים, ושימור המוטיבציה.',
+                link: 'https://drive.google.com/file/d/1Ix0hMVuvkQTql5TDbwspAf7pU07T-HMv/view?usp=drive_link',
+                icon: 'music',
+                gradient: 'from-orange-500 to-amber-400'
+            },
+            {
+                id: 5,
+                title: 'לוח חופשות - תשפ״ז',
+                description: 'חגים ופעילויות חלקיות לתכנון מיטבי של השלמות.',
+                link: 'https://drive.google.com/file/d/1w0SF-J23TrFUkHt8PavQRnjDeEqdRBwC/view?usp=drive_link',
+                icon: 'calendar-days',
+                gradient: 'from-rose-500 to-red-400'
+            },
+            {
+                id: 6,
+                title: 'אתר ההרשמה',
+                description: 'קישור ישיר למערכת ההרשמה המקוונת של המרכז.',
+                link: 'https://www.kefar-tavor.org.il/page.php?type=hugSearch&tab=hugim&view=cards&sort=name&sy=2026&hp=%D7%9E%D7%A8%D7%9B%D7%96+%D7%9E%D7%95%D7%A1%D7%99%D7%A7%D7%94+%D7%9C%D7%A0%D7%95%D7%A2%D7%A8&q=&sort=namesolidLightBlue%20solidLightBlue',
+                icon: 'mouse-pointer-click',
+                gradient: 'from-indigo-500 to-blue-500'
+            },
+            {
+                id: 7,
+                title: 'גיליון נוכחות דיגיטלי',
+                description: 'מעבר ישיר לפורטל הסגל: יומני המורים, שיבוץ החדרים ולוח שנה אקדמי.',
+                link: 'PorTelaMuzika.html',
+                icon: 'clipboard-list',
+                gradient: 'from-fuchsia-500 to-pink-500',
+                isPortal: true
+            },
+            {
+                id: 8,
+                title: 'מדריך הזנת נתונים לגיליון',
+                description: 'מדריך נהלים, סימולטור נוכחות והסברים.',
+                link: '#',
+                onClick: 'openGuideOverlay()',
+                icon: 'info',
+                gradient: 'from-cyan-500 to-blue-400'
+            },
+            {
+                id: 9,
+                title: 'לו״ז חדרי לימוד',
+                description: 'שיבוץ החדרים במתחם בית המוזיקה.',
+                link: 'https://docs.google.com/spreadsheets/d/1O2WXjowawiAcgyyCU7Ee76fw0iBmXKjNgGPAYNC_CWs/edit?usp=sharing',
+                icon: 'layout-dashboard',
+                gradient: 'from-violet-500 to-purple-400'
+            },
+            {
+                id: 10,
+                title: 'מעקב ציוד טכני',
+                description: 'רישום ציוד באולפן ובחדרים.',
+                link: '#',
+                icon: 'list-checks',
+                gradient: 'from-lime-500 to-green-400',
+                isPlaceholder: true
+            },
+            {
+                id: 11,
+                title: 'מאגר מדיה – העלאת חומרים',
+                description: 'תיקייה משותפת להעלאת תמונות וסרטונים.',
+                link: 'https://drive.google.com/drive/folders/1h0GBicc1fLx3eVZM4ZKjNHeE8K7ZeenQ?usp=sharing',
+                icon: 'upload-cloud',
+                gradient: 'from-orange-500 to-amber-500'
+            }
+        ];
+
+        const shareCategories = [
+            {
+                title: '🎹 פסנתר וקלידים',
+                links: [
+                    { name: 'פסנתר 30 דק\' - תושב פנים', url: 'https://www.kefar-tavor.org.il/page.php?type=hug&id=1652040&ht=%D7%9E%D7%A8%D7%9B%D7%96+%D7%9E%D7%95%D7%A1%D7%99%D7%A7%D7%94+%D7%9C%D7%A0%D7%95%D7%A2%D7%A8+-+%D7%A4%D7%A1%D7%A0%D7%AA%D7%A8+30+%D7%93%27+%D7%A4%D7%A0%D7%99%D7%9D' },
+                    { name: 'פסנתר 30 דק\' - תושב חוץ', url: 'https://www.kefar-tavor.org.il/page.php?type=hug&id=1652039&ht=%D7%9E%D7%A8%D7%9B%D7%96+%D7%9E%D7%95%D7%A1%D7%99%D7%A7%D7%94+%D7%9C%D7%A0%D7%95%D7%A2%D7%A8+-+%D7%A4%D7%A1%D7%A0%D7%AA%D7%A8+30+%D7%93%27+%D7%97%D7%95%D7%A5' },
+                    { name: 'פסנתר 45 דק\' - תושב פנים', url: 'https://www.kefar-tavor.org.il/page.php?type=hug&id=1652042&ht=%D7%9E%D7%A8%D7%9B%D7%96+%D7%9E%D7%95%D7%A1%D7%99%D7%A7%D7%94+%D7%9C%D7%A0%D7%95%D7%A2%D7%A8+-+%D7%A4%D7%A1%D7%A0%D7%AA%D7%A8+45+%D7%93%27+%D7%A4%D7%A0%D7%99%D7%9D' },
+                    { name: 'פסנתר 45 דק\' - תושב חוץ', url: 'https://www.kefar-tavor.org.il/page.php?type=hug&id=1652041&ht=%D7%9E%D7%A8%D7%9B%D7%96+%D7%9E%D7%95%D7%A1%D7%99%D7%A7%D7%94+%D7%9C%D7%A0%D7%95%D7%A2%D7%A8+-+%D7%A4%D7%A1%D7%A0%D7%AA%D7%A8+45+%D7%93%27+%D7%97%D7%95%D7%A5' }
+                ]
+            },
+            {
+                title: '🎸 גיטרה ובס',
+                links: [
+                    { name: 'גיטרה 30 דק\' - תושב פנים', url: 'https://www.kefar-tavor.org.il/page.php?type=hug&id=1652022&ht=%D7%9E%D7%A8%D7%9B%D7%96+%D7%9E%D7%95%D7%A1%D7%99%D7%A7%D7%94+%D7%9C%D7%A0%D7%95%D7%A2%D7%A8+-+%D7%92%D7%99%D7%98%D7%A8%D7%94+30+%D7%93%27+%D7%A4%D7%A0%D7%99%D7%9D' },
+                    { name: 'גיטרה 30 דק\' - תושב חוץ', url: 'https://www.kefar-tavor.org.il/page.php?type=hug&id=1652021&ht=%D7%9E%D7%A8%D7%9B%D7%96+%D7%9E%D7%95%D7%A1%D7%99%D7%A7%D7%94+%D7%9C%D7%A0%D7%95%D7%A2%D7%A8+-+%D7%92%D7%99%D7%98%D7%A8%D7%94+30+%D7%93%27+%D7%97%D7%95%D7%A5' },
+                    { name: 'גיטרה 45 דק\' - תושב פנים', url: 'https://www.kefar-tavor.org.il/page.php?type=hug&id=1652024&ht=%D7%9E%D7%A8%D7%9B%D7%96+%D7%9E%D7%95%D7%A1%D7%99%D7%A7%D7%94+%D7%9C%D7%A0%D7%95%D7%A2%D7%A8+-+%D7%92%D7%99%D7%98%D7%A8%D7%94+45+%D7%93%27+%D7%A4%D7%A0%D7%99%D7%9D' },
+                    { name: 'גיטרה 45 דק\' - תושב חוץ', url: 'https://www.kefar-tavor.org.il/page.php?type=hug&id=1652023&ht=%D7%9E%D7%A8%D7%9B%D7%96+%D7%9E%D7%95%D7%A1%D7%99%D7%A7%D7%94+%D7%9C%D7%A0%D7%95%D7%A2%D7%A8+-+%D7%92%D7%99%D7%98%D7%A8%D7%94+45+%D7%93%27+%D7%97%D7%95%D7%A5' },
+                    { name: 'בס 45 דק\' - תושב פנים', url: 'https://www.kefar-tavor.org.il/page.php?type=hug&id=1652020&ht=%D7%9E%D7%A8%D7%9B%D7%96+%D7%9E%D7%95%D7%A1%D7%99%D7%A7%D7%94+%D7%9C%D7%A0%D7%95%D7%A2%D7%A8+-+%D7%91%D7%A1+45+%D7%93%27+%D7%A4%D7%A0%D7%99%D7%9D' },
+                    { name: 'בס 45 דק\' - תושב חוץ', url: 'https://www.kefar-tavor.org.il/page.php?type=hug&id=1652019&ht=%D7%9E%D7%A8%D7%9B%D7%96+%D7%9E%D7%95%D7%A1%D7%99%D7%A7%D7%94+%D7%9C%D7%A0%D7%95%D7%A2%D7%A8+-+%D7%91%D7%A1+45+%D7%93%27+%D7%97%D7%95%D7%A5' }
+                ]
+            },
+            {
+                title: '🥁 תופים וכלי הקשה',
+                links: [
+                    { name: 'תופים 30 דק\' - תושב פנים', url: 'https://www.kefar-tavor.org.il/page.php?type=hug&id=1652044&ht=%D7%9E%D7%A8%D7%9B%D7%96+%D7%9E%D7%95%D7%A1%D7%99%D7%A7%D7%94+%D7%9C%D7%A0%D7%95%D7%A2%D7%A8+-+%D7%AA%D7%95%D7%A4%D7%99%D7%9D+30+%D7%93%27+%D7%A4%D7%A0%D7%99%D7%9D' },
+                    { name: 'תופים 30 דק\' - תושב חוץ', url: 'https://www.kefar-tavor.org.il/page.php?type=hug&id=1652043&ht=%D7%9E%D7%A8%D7%9B%D7%96+%D7%9E%D7%95%D7%A1%D7%99%D7%A7%D7%94+%D7%9C%D7%A0%D7%95%D7%A2%D7%A8+-+%D7%AA%D7%95%D7%A4%D7%99%D7%9D+30+%D7%93%27+%D7%97%D7%95%D7%A5' },
+                    { name: 'תופים 45 דק\' - תושב פנים', url: 'https://www.kefar-tavor.org.il/page.php?type=hug&id=1652046&ht=%D7%9E%D7%A8%D7%9B%D7%96+%D7%9E%D7%95%D7%A1%D7%99%D7%A7%D7%94+%D7%9C%D7%A0%D7%95%D7%A2%D7%A8+-+%D7%AA%D7%95%D7%A4%D7%99%D7%9D+45+%D7%93%27+%D7%A4%D7%A0%D7%99%D7%9D' },
+                    { name: 'תופים 45 דק\' - תושב חוץ', url: 'https://www.kefar-tavor.org.il/page.php?type=hug&id=1652045&ht=%D7%9E%D7%A8%D7%9B%D7%96+%D7%9E%D7%95%D7%A1%D7%99%D7%A7%D7%94+%D7%9C%D7%A0%D7%95%D7%A2%D7%A8+-+%D7%AA%D7%95%D7%A4%D7%99%D7%9D+45+%D7%93%27+%D7%97%D7%95%D7%A5' }
+                ]
+            },
+            {
+                title: '🎤 שירה ופיתוח קול',
+                links: [
+                    { name: 'פיתוח קול 45 דק\' - תושב פנים', url: 'https://www.kefar-tavor.org.il/page.php?type=hug&id=1652038&ht=%D7%9E%D7%A8%D7%9B%D7%96+%D7%9E%D7%95%D7%A1%D7%99%D7%A7%D7%94+%D7%9C%D7%A0%D7%95%D7%A2%D7%A8+-+%D7%A4%D7%99%D7%AA%D7%95%D7%97+%D7%A7%D7%95%D7%9C+45+%D7%93%27+%D7%A4%D7%A0%D7%99%D7%9D' },
+                    { name: 'פיתוח קול 45 דק\' - תושב חוץ', url: 'https://www.kefar-tavor.org.il/page.php?type=hug&id=1652037&ht=%D7%9E%D7%A8%D7%9B%D7%96+%D7%9E%D7%95%D7%A1%D7%99%D7%A7%D7%94+%D7%9C%D7%A0%D7%95%D7%A2%D7%A8+-+%D7%A4%D7%99%D7%AA%D7%95%D7%97+%D7%A7%D7%95%D7%9C+45+%D7%93%27+%D7%97%D7%95%D7%A5' }
+                ]
+            },
+            {
+                title: '🎻 נשיפה, קשת וכלים נוספים',
+                links: [
+                    { name: 'חליל צד 45 דק\' - תושב פנים', url: 'https://www.kefar-tavor.org.il/page.php?type=hug&id=1652030&ht=%D7%9E%D7%A8%D7%9B%D7%96+%D7%9E%D7%95%D7%A1%D7%99%D7%A7%D7%94+%D7%9C%D7%A0%D7%95%D7%A2%D7%A8+-+%D7%97%D7%9C%D7%99%D7%9C+%D7%A6%D7%93+45+%D7%93%27+%D7%A4%D7%A0%D7%99%D7%9D' },
+                    { name: 'חליל צד 45 דק\' - תושב חוץ', url: 'https://www.kefar-tavor.org.il/page.php?type=hug&id=1652029&ht=%D7%9E%D7%A8%D7%9B%D7%96+%D7%9E%D7%95%D7%A1%D7%99%D7%A7%D7%94+%D7%9C%D7%A0%D7%95%D7%A2%D7%A8+-+%D7%97%D7%9C%D7%99%D7%9C+%D7%A6%D7%93+45+%D7%93%27+%D7%97%D7%95%D7%A5' },
+                    { name: 'כינור 45 דק\' - תושב פנים', url: 'https://www.kefar-tavor.org.il/page.php?type=hug&id=1652032&ht=%D7%9E%D7%A8%D7%9B%D7%96+%D7%9E%D7%95%D7%A1%D7%99%D7%A7%D7%94+%D7%9C%D7%A0%D7%95%D7%A2%D7%A8+-+%D7%9B%D7%99%D7%A0%D7%95%D7%A8+45+%D7%93%27+%D7%A4%D7%A0%D7%99%D7%9D' },
+                    { name: 'כינור 45 דק\' - תושב חוץ', url: 'https://www.kefar-tavor.org.il/page.php?type=hug&id=1652031&ht=%D7%9E%D7%A8%D7%9B%D7%96+%D7%9E%D7%95%D7%A1%D7%99%D7%A7%D7%94+%D7%9C%D7%A0%D7%95%D7%A2%D7%A8+-+%D7%9B%D7%99%D7%A0%D7%95%D7%A8+45+%D7%93%27+%D7%97%D7%95%D7%A5' },
+                    { name: 'עוּד 45 דק\' - תושב פנים', url: 'https://www.kefar-tavor.org.il/page.php?type=hug&id=1652036&ht=%D7%9E%D7%A8%D7%9B%D7%96+%D7%9E%D7%95%D7%A1%D7%99%D7%A7%D7%94+%D7%9C%D7%A0%D7%95%D7%A2%D7%A8+-+%D7%A2%D7%95%D7%93+45+%D7%93%27+%D7%A4%D7%A0%D7%99%D7%9D' },
+                    { name: 'עוּד 45 דק\' - תושב חוץ', url: 'https://www.kefar-tavor.org.il/page.php?type=hug&id=1652035&ht=%D7%9E%D7%A8%D7%9B%D7%96+%D7%9E%D7%95%D7%A1%D7%99%D7%A7%D7%94+%D7%9C%D7%A0%D7%95%D7%A2%D7%A8+-+%D7%A2%D7%95%D7%93+45+%D7%93%27+%D7%97%D7%95%D7%A5' }
+                ]
+            },
+            {
+                title: '🎛️ הרכבים, מסלולים והפקה',
+                links: [
+                    { name: 'הפקה מוזיקלית 45 דק\' - תושב פנים', url: 'https://www.kefar-tavor.org.il/page.php?type=hug&id=1652026&ht=%D7%9E%D7%A8%D7%9B%D7%96+%D7%9E%D7%95%D7%A1%D7%99%D7%A7%D7%94+%D7%9C%D7%A0%D7%95%D7%A2%D7%A8+-+%D7%94%D7%A4%D7%A7%D7%94+45+%D7%93%27+%D7%A4%D7%A0%D7%99%D7%9D' },
+                    { name: 'הפקה מוזיקלית 45 דק\' - תושב חוץ', url: 'https://www.kefar-tavor.org.il/page.php?type=hug&id=1652025&ht=%D7%9E%D7%A8%D7%9B%D7%96+%D7%9E%D7%95%D7%A1%D7%99%D7%A7%D7%94+%D7%9C%D7%A0%D7%95%D7%A2%D7%A8+-+%D7%94%D7%A4%D7%A7%D7%94+45+%D7%93%27+%D7%97%D7%95%D7%A5' },
+                    { name: 'הרכב נגנים - תושב פנים', url: 'https://www.kefar-tavor.org.il/page.php?type=hug&id=1652028&ht=%D7%9E%D7%A8%D7%9B%D7%96+%D7%9E%D7%95%D7%A1%D7%99%D7%A7%D7%94+%D7%9C%D7%A0%D7%95%D7%A2%D7%A8+-+%D7%94%D7%A8%D7%9B%D7%91+%D7%A4%D7%A0%D7%99%D7%9D' },
+                    { name: 'הרכב נגנים - תושב חוץ', url: 'https://www.kefar-tavor.org.il/page.php?type=hug&id=1652027&ht=%D7%9E%D7%A8%D7%9B%D7%96+%D7%9E%D7%95%D7%A1%D7%99%D7%A7%D7%94+%D7%9C%D7%A0%D7%95%D7%A2%D7%A8+-+%D7%94%D7%A8%D7%9B%D7%91+%D7%97%D7%95%D7%A5' },
+                    { name: 'מסלול משולב - תושב פנים', url: 'https://www.kefar-tavor.org.il/page.php?type=hug&id=1652034&ht=%D7%9E%D7%A8%D7%9B%D7%96+%D7%9E%D7%95%D7%A1%D7%99%D7%A7%D7%94+%D7%9C%D7%A0%D7%95%D7%A2%D7%A8+-+%D7%9E%D7%A1%D7%9C%D7%95%D7%9C+%D7%9E%D7%95%D7%A9%D7%9C%D7%91+%D7%A4%D7%A0%D7%99%D7%9D' },
+                    { name: 'מסלול משולב - תושב חוץ', url: 'https://www.kefar-tavor.org.il/page.php?type=hug&id=1652033&ht=%D7%9E%D7%A8%D7%9B%D7%96+%D7%9E%D7%95%D7%A1%D7%99%D7%A7%D7%94+%D7%9C%D7%A0%D7%95%D7%A2%D7%A8+-+%D7%9E%D7%A1%D7%9C%D7%95%D7%9C+%D7%9E%D7%95%D7%A9%D7%9C%D7%91+%D7%97%D7%95%D7%A5' }
+                ]
+            }
+        ];
+
+        function renderCards() {
+            const grid = document.getElementById('documents-grid');
+            documents.forEach((doc, index) => {
+                const delay = index * 100;
+                let actionButton = '';
+                
+                if (doc.isPlaceholder) {
+                    actionButton = `<span class="inline-flex items-center text-xs font-bold text-gray-300 bg-white/10 px-4 py-2 rounded-full cursor-not-allowed border border-white/5"><i data-lucide="clock" class="w-3 h-3 ml-2"></i> יצורף בהמשך</span>`;
+                } else if (doc.onClick) {
+                    actionButton = `<button onclick="${doc.onClick}" class="inline-flex items-center text-sm font-bold text-white bg-gradient-to-r ${doc.gradient} hover:scale-105 px-6 py-2.5 rounded-full transition-transform shadow-lg"><i data-lucide="external-link" class="w-4 h-4 ml-2"></i> פתח מדריך</button>`;
+                } else if (doc.isPortal) {
+                    actionButton = `<a href="${doc.link}" class="inline-flex items-center text-sm font-bold text-white bg-gradient-to-r ${doc.gradient} hover:scale-105 px-6 py-2.5 rounded-full transition-transform shadow-lg"><i data-lucide="external-link" class="w-4 h-4 ml-2"></i> כניסה לפורטל</a>`;
+                } else {
+                    actionButton = `<a href="${doc.link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-sm font-bold text-white bg-gradient-to-r ${doc.gradient} hover:scale-105 px-6 py-2.5 rounded-full transition-transform shadow-lg"><i data-lucide="external-link" class="w-4 h-4 ml-2"></i> צפייה</a>`;
+                }
+
+                const clickAction = doc.isPortal ? `window.location.href='${doc.link}'` : (doc.onClick ? doc.onClick : (doc.link && doc.link !== '#' ? "window.open('" + doc.link + "', '_blank')" : 'void(0);'));
+
+                const cardHTML = `
+                    <div class="glass-circle relative aspect-square rounded-full p-6 sm:p-8 flex flex-col justify-center items-center text-center group w-full max-w-[280px] sm:max-w-[320px] mx-auto cursor-pointer" 
+                         onclick="${clickAction}"
+                         style="animation: floatUp 0.5s ease-out forwards; animation-delay: ${delay}ms; opacity: 0; transform: translateY(20px);"
+                         onmouseenter="createSparkles(this)">
+                        
+                        <div class="absolute inset-0 rounded-full border-2 border-white/5 group-hover:border-white/30 transition-colors pointer-events-none"></div>
+                        <div class="absolute inset-0 rounded-full bg-gradient-to-tr ${doc.gradient} opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none"></div>
+                        
+                        <div class="w-16 h-16 mb-4 rounded-full bg-gradient-to-br ${doc.gradient} p-0.5 shadow-lg flex-shrink-0 flex items-center justify-center">
+                            <div class="w-full h-full bg-music-dark rounded-full flex items-center justify-center bg-opacity-90">
+                                <i data-lucide="${doc.icon}" class="w-8 h-8 text-white"></i>
+                            </div>
+                        </div>
+                        
+                        <h2 class="text-lg sm:text-xl font-bold text-white leading-tight mb-2 max-w-[90%]">${doc.title}</h2>
+                        <p class="text-gray-300 text-xs sm:text-sm mb-4 line-clamp-3 max-w-[90%] leading-snug">${doc.description}</p>
+                        
+                        <div class="mt-auto z-10" onclick="event.stopPropagation();">${actionButton}</div>
+                    </div>
+                `;
+                grid.innerHTML += cardHTML;
+            });
+            lucide.createIcons();
+            
+            setTimeout(() => {
+                document.querySelectorAll('.glass-circle').forEach(card => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                    card.style.animation = 'none';
+                });
+            }, documents.length * 100 + 500);
+        }
+
+        function renderShareLinks() {
+            const container = document.getElementById('share-links-container');
+            container.innerHTML = ''; 
+            
+            shareCategories.forEach(category => {
+                const header = document.createElement('h4');
+                header.className = 'font-bold text-brand-300 mt-5 mb-2 px-3 sticky top-0 bg-[#1e1937]/95 backdrop-blur-md py-2 border-b border-white/10 z-10 text-right';
+                header.innerText = category.title;
+                container.appendChild(header);
+
+                const listWrapper = document.createElement('div');
+                listWrapper.className = 'space-y-2 mb-4';
+
+                category.links.forEach(link => {
+                    const item = document.createElement('div');
+                    item.className = 'flex items-center justify-between bg-white/5 border border-white/10 rounded-xl p-3 hover:bg-white/10 transition-colors';
+                    
+                    const whatsappText = `היי! הנה הקישור להרשמה לשיעורי ${link.name} בבית המוזיקה:\n${link.url}`;
+                    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(whatsappText)}`;
+
+                    item.innerHTML = `
+                        <span class="font-medium text-white text-sm text-right leading-tight w-2/3 truncate" title="${link.name}">${link.name}</span>
+                        <div class="flex gap-2 shrink-0 mr-3">
+                            <button onclick="copyToClipboard('${link.url}')" class="p-2 text-gray-300 hover:text-white bg-white/10 rounded-lg hover:bg-white/20 transition focus:outline-none" title="העתק קישור">
+                                <i data-lucide="copy" class="w-4 h-4"></i>
+                            </button>
+                            <a href="${whatsappUrl}" target="_blank" class="p-2 text-green-400 hover:text-green-300 bg-white/10 rounded-lg hover:bg-white/20 transition focus:outline-none" title="שתף בוואטסאפ">
+                                <i data-lucide="message-circle" class="w-4 h-4"></i>
+                            </a>
+                        </div>
+                    `;
+                    listWrapper.appendChild(item);
+                });
+                container.appendChild(listWrapper);
+            });
+            lucide.createIcons();
+        }
+
+        window.createSparkles = function(element) {
+            const notes = ['♪', '♫', '♩', '♬', '🎸', '🎹', '🥁', '✨', '✦'];
+            const colors = ['text-pink-400', 'text-cyan-400', 'text-yellow-400', 'text-purple-400', 'text-music-accent3'];
+            const numSparkles = 15 + Math.floor(Math.random() * 10);
+            
+            for(let i = 0; i < numSparkles; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle-note';
+                sparkle.innerText = notes[Math.floor(Math.random() * notes.length)];
+                
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 80 + Math.random() * 150; 
+                const tx = Math.cos(angle) * distance + 'px';
+                const ty = Math.sin(angle) * distance - 60 + 'px'; 
+                const rot = (Math.random() - 0.5) * 360 + 'deg'; 
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                
+                sparkle.classList.add(color);
+                sparkle.style.setProperty('--tx', tx);
+                sparkle.style.setProperty('--ty', ty);
+                sparkle.style.setProperty('--rot', rot);
+                sparkle.style.left = '50%';
+                sparkle.style.top = '50%';
+                
+                element.appendChild(sparkle);
+                setTimeout(() => sparkle.remove(), 2500);
+            }
+        }
+
+        function copyToClipboard(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => showToast());
+            } else {
+                let textArea = document.createElement("textarea");
+                textArea.value = text;
+                textArea.style.position = "fixed";
+                textArea.style.left = "-999999px";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast();
+                } catch (err) {}
+                document.body.removeChild(textArea);
+            }
+        }
+
+        function showToast() {
+            const existingToast = document.getElementById('toast-message');
+            if (existingToast) existingToast.remove();
+
+            const toast = document.createElement('div');
+            toast.id = 'toast-message';
+            toast.className = 'fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-white/20 backdrop-blur-lg border border-white/30 text-white px-8 py-3 rounded-full shadow-2xl z-50 transition-opacity duration-300 font-bold text-sm flex items-center gap-2';
+            toast.innerHTML = '<i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i> הקישור הועתק בהצלחה!';
+            document.body.appendChild(toast);
+            lucide.createIcons();
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
+
+        function openShareModal() {
+            const modal = document.getElementById('share-modal');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.querySelector('.glass-circle').classList.remove('scale-95');
+                modal.querySelector('.glass-circle').classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeShareModal() {
+            const modal = document.getElementById('share-modal');
+            modal.classList.add('opacity-0');
+            modal.querySelector('.glass-circle').classList.remove('scale-100');
+            modal.querySelector('.glass-circle').classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function openGuideOverlay() {
+            const overlay = document.getElementById('guide-overlay');
+            overlay.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; 
+        }
+
+        function closeGuideOverlay() {
+            const overlay = document.getElementById('guide-overlay');
+            overlay.classList.add('hidden');
+            document.body.style.overflow = 'auto'; 
+        }
+
+        function createMusicNotes() {
+            const container = document.getElementById('notes-container');
+            const notes = ['♪', '♫', '♩', '♬', '🎸', '🎹', '🥁', '🎷', '🎻'];
+            for (let i = 0; i < 25; i++) {
+                const noteEl = document.createElement('div');
+                noteEl.className = 'note text-white';
+                noteEl.innerText = notes[Math.floor(Math.random() * notes.length)];
+                noteEl.style.left = `${Math.random() * 100}%`;
+                noteEl.style.fontSize = `${1.5 + Math.random() * 4}rem`;
+                noteEl.style.animationDuration = `${10 + Math.random() * 25}s`;
+                noteEl.style.animationDelay = `${Math.random() * 15}s`;
+                container.appendChild(noteEl);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCards();
+            renderShareLinks();
+            createMusicNotes();
+        });
+    </script>
+</body>
+</html>

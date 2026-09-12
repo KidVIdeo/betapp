@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>בית המוזיקה | פורטל סגל תשפ"ז</title>
+    <title>בית המוזיקה | פורטל סגל ולוח שנה</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;800;900&display=swap" rel="stylesheet">
@@ -120,12 +120,12 @@
         .calendar-cell.other-month { opacity: 0.4; background: transparent; border: 1px dashed rgba(2, 132, 199, 0.2); }
         .calendar-cell.today { border: 2px solid #0284c7; background: #f0f9ff; }
         .event-badge {
-            font-size: 0.62rem;
-            padding: 3px 5px;
+            font-size: 0.65rem;
+            padding: 4px 6px;
             border-radius: 6px;
-            margin-top: 3px;
+            margin-top: 4px;
             font-weight: 800;
-            line-height: 1.2;
+            line-height: 1.25;
             word-break: break-word;
             box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
@@ -185,6 +185,12 @@
     </header>
 
     <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- באנר פנורמי ראשי -->
+        <div class="mb-10 w-full rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white/60 relative group hover-trigger cursor-default">
+            <div class="absolute inset-0 bg-gradient-to-t from-sky-900/10 to-transparent z-10 pointer-events-none"></div>
+            <img src="logobm.jpg" alt="בית המוזיקה כפר תבור - פנורמה" class="w-full h-auto block transform group-hover:scale-105 transition-transform duration-1000 ease-out">
+        </div>
         
         <!-- ======================= PORTAL TAB ======================= -->
         <div id="view-portal" class="space-y-10 animate-fade-in">
@@ -231,16 +237,16 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" id="teachersList">
                     <script>
                         const teachers = [
-                            { name: "גרינברג סופיה", desc: "פסנתר, פיתוח קול 🎹🎤", link: "https://docs.google.com/spreadsheets/d/10-oyEZ4MEyPpcMrkiD9h2Zwc8xfGtV2be5Ssf0Ryeck/edit?gid=1453492726#gid=1453492726", icon: "ג" },
-                            { name: "כהן אליעזר", desc: "בס, הרכבים, מפגשים 🎸", link: "https://docs.google.com/spreadsheets/d/1McmfTowf_7kBnRnEc8QFqSd5DQdIumrmO5j_-aFZPv0/edit?gid=1453492726#gid=1453492726", icon: "כ" },
-                            { name: "כהן נחשון", desc: "תופים, הרכבים, מפגשים 🥁", link: "https://docs.google.com/spreadsheets/d/1upkIOzAjVOWmB7dK1sNnYjCytMmDLBko0ruT4iZGIlk/edit?gid=1453492726#gid=1453492726", icon: "כ" },
-                            { name: "לוריא יהונתן", desc: "פסנתר, גיטרה 🎹🎸", link: "https://docs.google.com/spreadsheets/d/1x-cX9OookGe0dBPvYPj4stn7xCYj26Te_yaUZwWVDk8/edit?gid=1453492726#gid=1453492726", icon: "ל" },
-                            { name: "מז'יבובסקי נתן", desc: "פסנתר, גיטרה, הפקה 🎹🎸", link: "https://docs.google.com/spreadsheets/d/1Rm2YB3wEJ1GSrlYJ2SDzf_8WJJwccjOnuWQE7b0QR_I/edit?gid=1453492726#gid=1453492726", icon: "מ" },
-                            { name: "פלד אילן", desc: "גיטרה, הרכבים, מפגשים 🎸", link: "https://docs.google.com/spreadsheets/d/125MnKz33blI9K4KFGTnjvNci17VDMkKvsyxy16xEhp8/edit?gid=1453492726#gid=1453492726", icon: "פ" },
-                            { name: "רגימוב אריאל", desc: "חליל צד, כינור 🎻", link: "https://docs.google.com/spreadsheets/d/1cbbadzttSYEZzZ9YRuGKyh9y8u2PcB8t3_ul1U6i6V4/edit?gid=1453492726#gid=1453492726", icon: "ר" },
-                            { name: "רזומנייה אלינה", desc: "פיתוח קול 🎤", link: "https://docs.google.com/spreadsheets/d/1p5K4aNRByN4D60zuY_gFRHmizdpaNz6HNCeSA87l3Bk/edit?gid=1453492726#gid=1453492726", icon: "ר" },
-                            { name: "רייזמן סימונה", desc: "פסנתר, גיטרה, עוד, פיתוח קול, הפקה, הרכבים 🎶", link: "https://docs.google.com/spreadsheets/d/1-nNK6ZdRZt7QNijk83yg5SVAsBDY6oc4LsAGtQtskwg/edit?gid=1453492726#gid=1453492726", icon: "ר" },
-                            { name: "שמידע ארז", desc: "גיטרה, הרכבים, מפגשים 🎸", link: "https://docs.google.com/spreadsheets/d/150btgbXqkG524UFpK65CD_BSKSKksw7gIkJddtewHuo/edit?gid=1453492726#gid=1453492726", icon: "ש" }
+                            { name: "גרינברג סופיה", desc: "פסנתר, פיתוח קול 🎹🎤", link: "https://docs.google.com/spreadsheets/d/10-oyEZ4MEyPpcMrkiD9h2Zwc8xfGtV2be5Ssf0Ryeck/edit?gid=1453492726#gid=1453492726", icon: "ג", emoji: "🎹🎤" },
+                            { name: "כהן אליעזר", desc: "בס, הרכבים, מפגשים 🎸", link: "https://docs.google.com/spreadsheets/d/1McmfTowf_7kBnRnEc8QFqSd5DQdIumrmO5j_-aFZPv0/edit?gid=1453492726#gid=1453492726", icon: "כ", emoji: "🎸" },
+                            { name: "כהן נחשון", desc: "תופים, הרכבים, מפגשים 🥁", link: "https://docs.google.com/spreadsheets/d/1upkIOzAjVOWmB7dK1sNnYjCytMmDLBko0ruT4iZGIlk/edit?gid=1453492726#gid=1453492726", icon: "כ", emoji: "🥁" },
+                            { name: "לוריא יהונתן", desc: "פסנתר, גיטרה 🎹🎸", link: "https://docs.google.com/spreadsheets/d/1x-cX9OookGe0dBPvYPj4stn7xCYj26Te_yaUZwWVDk8/edit?gid=1453492726#gid=1453492726", icon: "ל", emoji: "🎹🎸" },
+                            { name: "מז'יבובסקי נתן", desc: "פסנתר, גיטרה, הפקה 🎹🎸", link: "https://docs.google.com/spreadsheets/d/1Rm2YB3wEJ1GSrlYJ2SDzf_8WJJwccjOnuWQE7b0QR_I/edit?gid=1453492726#gid=1453492726", icon: "מ", emoji: "🎹🎸" },
+                            { name: "פלד אילן", desc: "גיטרה, הרכבים, מפגשים 🎸", link: "https://docs.google.com/spreadsheets/d/125MnKz33blI9K4KFGTnjvNci17VDMkKvsyxy16xEhp8/edit?gid=1453492726#gid=1453492726", icon: "פ", emoji: "🎸" },
+                            { name: "רגימוב אריאל", desc: "חליל צד, כינור 🎻", link: "https://docs.google.com/spreadsheets/d/1cbbadzttSYEZzZ9YRuGKyh9y8u2PcB8t3_ul1U6i6V4/edit?gid=1453492726#gid=1453492726", icon: "ר", emoji: "🎻🎶" },
+                            { name: "רזומנייה אלינה", desc: "פיתוח קול 🎤", link: "https://docs.google.com/spreadsheets/d/1p5K4aNRByN4D60zuY_gFRHmizdpaNz6HNCeSA87l3Bk/edit?gid=1453492726#gid=1453492726", icon: "ר", emoji: "🎤" },
+                            { name: "רייזמן סימונה", desc: "פסנתר, גיטרה, עוד, פיתוח קול, הפקה 🎶", link: "https://docs.google.com/spreadsheets/d/1-nNK6ZdRZt7QNijk83yg5SVAsBDY6oc4LsAGtQtskwg/edit?gid=1453492726#gid=1453492726", icon: "ר", emoji: "🎹🎸🎤" },
+                            { name: "שמידע ארז", desc: "גיטרה, הרכבים, מפגשים 🎸", link: "https://docs.google.com/spreadsheets/d/150btgbXqkG524UFpK65CD_BSKSKksw7gIkJddtewHuo/edit?gid=1453492726#gid=1453492726", icon: "ש", emoji: "🎸" }
                         ];
 
                         document.write(teachers.map((t, i) => {
@@ -252,7 +258,9 @@
                             return `
                                 <a href="${t.link}" target="_blank" rel="noopener noreferrer" class="teacher-card teacher-ellipse rainbow-card px-6 py-4 flex justify-between items-center group hover-trigger" style="${bgStyle}">
                                     <div class="flex items-center gap-3.5 min-w-0 pr-1">
-                                        <div class="w-12 h-12 rounded-full bg-white/75 flex-shrink-0 flex items-center justify-center text-slate-800 font-black text-xl shadow-sm border border-white/80">${t.icon}</div>
+                                        <div class="w-16 h-14 rounded-full bg-white/75 flex-shrink-0 flex items-center justify-center text-slate-800 font-black text-xl shadow-sm border border-white/80 gap-1 px-2">
+                                            <span>${t.icon}</span><span class="text-sm tracking-tighter">${t.emoji}</span>
+                                        </div>
                                         <div class="min-w-0">
                                             <p class="font-black text-slate-900 text-lg leading-tight truncate">${t.name}</p>
                                             <p class="text-xs font-bold text-slate-700 mt-1 leading-snug">${t.desc}</p>
@@ -271,14 +279,32 @@
 
         <!-- ======================= CALENDAR TAB ======================= -->
         <div id="view-calendar" class="hidden animate-fade-in">
-            <section class="glass-panel p-6 sm:p-8 rounded-[2.5rem]">
+            <section class="glass-panel p-6 sm:p-8 rounded-[2.5rem]" id="calendarSection">
                 
+                <!-- תמונת חודש מתחלפת -->
+                <div class="mb-8 relative overflow-hidden rounded-[2.5rem] shadow-xl border border-white/50 bg-white/40 backdrop-blur-md">
+                    <div class="flex flex-col md:flex-row items-center justify-between p-6 md:p-10 gap-8">
+                        <div class="text-center md:text-right z-10 flex-1">
+                            <span class="px-4 py-1.5 rounded-full text-sm font-bold bg-white/70 text-slate-800 border border-white/80 shadow-sm inline-block mb-4">
+                                לוח אקדמי תשפ"ז
+                            </span>
+                            <h2 id="monthTitleDisplay" class="text-4xl md:text-5xl font-black text-slate-800 mb-2 drop-shadow-sm"></h2>
+                            <p class="text-slate-700 font-bold text-lg">לוח אירועים, חזרות ומופעים</p>
+                        </div>
+                        
+                        <div class="relative group shrink-0 w-full md:w-auto flex justify-center">
+                            <div class="absolute inset-0 bg-white/40 rounded-full blur-2xl transform scale-110"></div>
+                            <img id="monthImage" src="" alt="תמונת חודש" class="relative w-64 h-64 md:w-80 md:h-80 object-contain drop-shadow-2xl transform group-hover:scale-105 group-hover:-rotate-2 transition-all duration-500 ease-out" onerror="this.src='https://placehold.co/300x300/e0f2fe/0284c7?text=תמונה+בחודש'">
+                        </div>
+                    </div>
+                </div>
+
                 <div class="flex items-center justify-between mb-8 bg-white/50 p-4 rounded-2xl border border-white/80 shadow-sm hover-trigger">
-                    <button id="prevMonthBtn" class="p-2 md:px-4 md:py-2 bg-white rounded-xl shadow-sm hover:bg-sky-50 text-sky-700 font-bold transition flex items-center gap-2 border border-sky-100">
+                    <button id="prevMonthBtn" class="p-2 md:px-4 md:py-2 bg-white rounded-xl shadow-sm hover:bg-slate-50 text-slate-700 font-bold transition flex items-center gap-2 border border-slate-200">
                         <i data-lucide="chevron-right" class="w-5 h-5"></i><span class="hidden sm:inline">חודש קודם</span>
                     </button>
                     <h2 id="monthYearDisplay" class="text-2xl md:text-3xl font-black text-slate-800 text-center flex-1"></h2>
-                    <button id="nextMonthBtn" class="p-2 md:px-4 md:py-2 bg-white rounded-xl shadow-sm hover:bg-sky-50 text-sky-700 font-bold transition flex items-center gap-2 border border-sky-100">
+                    <button id="nextMonthBtn" class="p-2 md:px-4 md:py-2 bg-white rounded-xl shadow-sm hover:bg-slate-50 text-slate-700 font-bold transition flex items-center gap-2 border border-slate-200">
                         <span class="hidden sm:inline">חודש הבא</span><i data-lucide="chevron-left" class="w-5 h-5"></i>
                     </button>
                 </div>
@@ -289,8 +315,8 @@
                     <div class="calendar-day-header">שלישי</div>
                     <div class="calendar-day-header">רביעי</div>
                     <div class="calendar-day-header">חמישי</div>
-                    <div class="calendar-day-header text-slate-400">שישי</div>
-                    <div class="calendar-day-header text-slate-400">שבת</div>
+                    <div class="calendar-day-header text-slate-500">שישי</div>
+                    <div class="calendar-day-header text-slate-500">שבת</div>
                 </div>
                 <div id="calendarDays" class="calendar-grid mt-2"></div>
             </section>
@@ -353,52 +379,82 @@
         }
 
         const monthNames = ["ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"];
+        
         const monthPastelColors = [
-            '#fce7f3', '#ccfbf1', '#ffedd5', '#fae8ff', '#dbeafe', '#fef08a', 
-            '#fed7aa', '#f3f4f6', '#e0f2fe', '#fef3c7', '#d1fae5', '#e0e7ff'
+            'hsl(0, 85%, 93%)',   // 0 Jan
+            'hsl(30, 85%, 93%)',  // 1 Feb
+            'hsl(60, 85%, 93%)',  // 2 Mar
+            'hsl(90, 85%, 93%)',  // 3 Apr
+            'hsl(120, 85%, 93%)', // 4 May
+            'hsl(150, 85%, 93%)', // 5 Jun
+            'hsl(180, 85%, 93%)', // 6 Jul
+            'hsl(210, 85%, 93%)', // 7 Aug
+            'hsl(240, 85%, 93%)', // 8 Sep
+            'hsl(270, 85%, 93%)', // 9 Oct
+            'hsl(300, 85%, 93%)', // 10 Nov
+            'hsl(330, 85%, 93%)'  // 11 Dec
+        ];
+
+        /* מפת קבצי ה-JPG המדויקת והמלאה לכל 12 חודשי השנה */
+        const monthImages = [
+            'img01.jpg',   // 0 ינואר
+            'img02.jpg',   // 1 פברואר
+            'img03.jpg',   // 2 מרץ
+            'img04.jpg',   // 3 אפריל
+            'img05.jpg',   // 4 מאי
+            'img06.jpg',   // 5 יוני
+            'img07.jpg',   // 6 יולי
+            'img08.jpg',   // 7 אוגוסט
+            'img09.jpg',   // 8 ספטמבר
+            'img10.jpg',   // 9 אוקטובר
+            'img11.jpg',   // 10 נובמבר
+            'img12.jpg'    // 11 דצמבר
         ];
 
         let currDate = new Date(2026, 8, 1);
 
         const calendarEvents = [
+            // חגים
             { start: '2026-09-11', end: '2026-09-13', title: 'ראש השנה (חופש)', type: 'holiday' },
             { start: '2026-09-20', end: '2026-09-21', title: 'יום כיפור (חופש)', type: 'holiday' },
             { start: '2026-09-25', end: '2026-10-03', title: 'סוכות (חוגים כרגיל בחוה"מ)', type: 'halfday' },
-            
-            // November Rehearsals for Hanukkah
-            ...['2026-11-05', '2026-11-11', '2026-11-12', '2026-11-18', '2026-11-19', '2026-11-25', '2026-11-26'].map(d => ({ start: d, end: d, title: '🕎 חזרות למופע חנוכה', type: 'rehearsal' })),
-            
-            // December Rehearsals & Hanukkah Opening
-            ...['2026-12-01', '2026-12-03', '2026-12-05'].map(d => ({ start: d, end: d, title: '🕎 חזרות למופע חנוכה', type: 'rehearsal' })),
-            { start: '2026-12-06', end: '2026-12-06', title: '🌟 הופעת נבחרת הילדים והנוער (חנוכה)', type: 'concert' },
             { start: '2026-12-06', end: '2026-12-12', title: 'חנוכה (חופש)', type: 'holiday' },
-
-            // January & February Mid-Year
-            ...['2027-01-03', '2027-01-04', '2027-01-07', '2027-01-12', '2027-01-14', '2027-01-20', '2027-01-21'].map(d => ({ start: d, end: d, title: '🎵 גיבוש הכנות וחזרות למופעי אמצע שנה', type: 'rehearsal' })),
-            { start: '2027-01-24', end: '2027-01-28', title: '🌟 מופעי אמצע שנה', type: 'concert' },
-            { start: '2027-02-01', end: '2027-02-04', title: '🌟 מופעי אמצע שנה', type: 'concert' },
             { start: '2027-03-23', end: '2027-03-24', title: 'פורים (חוגים כרגיל)', type: 'halfday' },
-            
-            // Warriors Songs Rehearsals (Wednesdays & Saturdays in March & April)
-            ...['2027-03-03', '2027-03-06', '2027-03-10', '2027-03-13', '2027-03-17', '2027-03-20', '2027-03-27', '2027-03-31', '2027-04-03', '2027-04-07', '2027-04-10', '2027-04-14', '2027-04-17'].map(d => ({ start: d, end: d, title: '🎵 חזרות שירי לוחמים (ערב יוה"ז)', type: 'rehearsal' })),
-
             { start: '2027-04-21', end: '2027-04-28', title: 'פסח (חופש)', type: 'holiday' },
-            { start: '2027-04-29', end: '2027-04-30', title: '🎵 חזרה לפעילות מלאה', type: 'concert' },
-
-            // May & June End of Year Prep (3 times a week)
-            ...['2027-05-02', '2027-05-05', '2027-05-06', '2027-05-09', '2027-05-13', '2027-05-16', '2027-05-17', '2027-05-18', '2027-05-19', '2027-05-20', '2027-05-23', '2027-05-24', '2027-05-25', '2027-05-26', '2027-05-27', '2027-05-30', '2027-05-31'].map(d => ({ start: d, end: d, title: '🎸 גיבוש, הכנות וחזרות למופע סוף שנה', type: 'rehearsal' })),
-            { start: '2027-05-03', end: '2027-05-03', title: 'ערב יום השואה', type: 'halfday' },
-            { start: '2027-05-10', end: '2027-05-10', title: 'ערב יוה"ז', type: 'halfday' },
             { start: '2027-05-11', end: '2027-05-11', title: 'יום הזיכרון', type: 'holiday' },
             { start: '2027-05-12', end: '2027-05-12', title: 'יום העצמאות', type: 'holiday' },
-
-            ...['2027-06-01', '2027-06-02', '2027-06-03', '2027-06-06', '2027-06-07', '2027-06-08', '2027-06-13', '2027-06-14', '2027-06-15', '2027-06-16', '2027-06-17', '2027-06-20', '2027-06-21', '2027-06-22', '2027-06-23', '2027-06-24', '2027-06-27', '2027-06-28', '2027-06-29', '2027-06-30'].map(d => ({ start: d, end: d, title: '🎸 גיבוש, הכנות וחזרות למופע סוף שנה', type: 'rehearsal' })),
-            { start: '2027-06-09', end: '2027-06-09', title: '⚽ מופע סוף שנה כדורי', type: 'concert' },
-            { start: '2027-06-10', end: '2027-06-10', title: '🌾 מופע שיר שירים וביכורים', type: 'concert' },
             { start: '2027-06-10', end: '2027-06-12', title: 'שבועות', type: 'holiday' },
 
-            // July Rehearsals & Concert Dates
+            // חנוכה
+            ...['2026-11-05', '2026-11-11', '2026-11-12', '2026-11-18', '2026-11-19', '2026-11-25', '2026-11-26', '2026-12-01', '2026-12-03', '2026-12-05'].map(d => ({ start: d, end: d, title: '🕎 חזרות למופע חנוכה', type: 'rehearsal' })),
+            { start: '2026-12-06', end: '2026-12-06', title: '🌟 הופעת נבחרת הילדים (חנוכה)', type: 'concert' },
+
+            // גיבוש והכנות לאמצע שנה
+            ...['2027-01-03', '2027-01-04', '2027-01-07', '2027-01-12', '2027-01-14', '2027-01-20', '2027-01-21'].map(d => ({ start: d, end: d, title: '🎵 גיבוש הכנות וחזרות למופעי אמצע שנה', type: 'rehearsal' })),
+            
+            // מופעי אמצע שנה 
+            ...['2027-01-24', '2027-01-25', '2027-01-26', '2027-01-27', '2027-01-28', '2027-02-01', '2027-02-02', '2027-02-03', '2027-02-04'].map(d => ({ start: d, end: d, title: '🌟 מופעי אמצע שנה', type: 'concert' })),
+
+            // שירי לוחמים 
+            ...['2027-03-03', '2027-03-06', '2027-03-10', '2027-03-13', '2027-03-17', '2027-03-20', '2027-03-24', '2027-03-27', '2027-03-31', '2027-04-03', '2027-04-07', '2027-04-10', '2027-04-14', '2027-04-17'].map(d => ({ start: d, end: d, title: '🎵 חזרות שירי לוחמים', type: 'rehearsal' })),
+            { start: '2027-04-29', end: '2027-04-30', title: '🎵 חזרה לפעילות מלאה', type: 'concert' },
+
+            // חזרות סוף שנה בחודש מאי
+            ...['2027-05-02','2027-05-05','2027-05-06','2027-05-07','2027-05-09','2027-05-13','2027-05-14','2027-05-16','2027-05-17','2027-05-18','2027-05-19','2027-05-20','2027-05-21','2027-05-23','2027-05-24','2027-05-25','2027-05-26','2027-05-27','2027-05-28','2027-05-30','2027-05-31']
+            .map(d => ({ start: d, end: d, title: '🎸 גיבוש, הכנות וחזרות למופע סוף שנה', type: 'rehearsal' })),
+            
+            // חזרות סוף שנה בחודש יוני
+            ...['2027-06-01','2027-06-02','2027-06-03','2027-06-04','2027-06-06','2027-06-07','2027-06-08','2027-06-13','2027-06-14','2027-06-15','2027-06-16','2027-06-17','2027-06-18','2027-06-20','2027-06-21','2027-06-22','2027-06-23','2027-06-24','2027-06-25','2027-06-27','2027-06-28','2027-06-29','2027-06-30']
+            .map(d => ({ start: d, end: d, title: '🎸 גיבוש, הכנות וחזרות למופע סוף שנה', type: 'rehearsal' })),
+            
+            // מופעי יוני סוף שנה 
+            { start: '2027-06-09', end: '2027-06-09', title: '⚽ מופע סוף שנה כדורי', type: 'concert', customStyle: 'background:#e0f2fe;color:#0369a1;border:1px solid #7dd3fc;' },
+            { start: '2027-06-10', end: '2027-06-10', title: '🌾 מופע שיר שירים וביכורים', type: 'concert', customStyle: 'background:#fef3c7;color:#b45309;border:1px solid #fde047;' },
+
+            // חזרות יולי 
             ...['2027-07-01', '2027-07-04', '2027-07-05', '2027-07-06', '2027-07-08', '2027-07-11', '2027-07-12', '2027-07-13', '2027-07-18', '2027-07-19', '2027-07-20', '2027-07-25', '2027-07-26', '2027-07-27'].map(d => ({ start: d, end: d, title: '🎸 חזרות למופע סוף שנה', type: 'rehearsal' })),
+            
+            // מופעי יולי סוף שנה 
             { start: '2027-07-07', end: '2027-07-07', title: '🎸 מופע סוף שנה', type: 'concert', customStyle: 'background:#ffe4e6;color:#e11d48;border:1px solid #f43f5e;' },
             { start: '2027-07-14', end: '2027-07-14', title: '🎹 מופע סוף שנה', type: 'concert', customStyle: 'background:#ede9fe;color:#7c3aed;border:1px solid #8b5cf6;' },
             { start: '2027-07-15', end: '2027-07-15', title: '🥁 מופע סוף שנה', type: 'concert', customStyle: 'background:#e0f2fe;color:#0284c7;border:1px solid #38bdf8;' },
@@ -411,8 +467,19 @@
             const year = currDate.getFullYear();
             const month = currDate.getMonth();
             document.getElementById('monthYearDisplay').innerText = `${monthNames[month]} ${year}`;
+            document.getElementById('monthTitleDisplay').innerText = `${monthNames[month]} ${year}`;
             
-            const calendarSection = document.querySelector('#view-calendar .glass-panel');
+            // הגדרת תמונת חודש
+            const imgElement = document.getElementById('monthImage');
+            const currentImg = monthImages[month];
+            if(currentImg) {
+                imgElement.src = currentImg;
+                imgElement.style.display = 'block';
+            } else {
+                imgElement.style.display = 'none';
+            }
+
+            const calendarSection = document.getElementById('calendarSection');
             if (calendarSection) {
                 calendarSection.style.background = monthPastelColors[month] || 'rgba(255,255,255,0.85)';
             }
@@ -477,3 +544,4 @@
     </script>
 </body>
 </html>
+```eof

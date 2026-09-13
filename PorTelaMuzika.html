@@ -102,7 +102,7 @@
         .calendar-cell {
             background: rgba(255,255,255,0.85);
             border-radius: 12px;
-            min-height: 115px;
+            min-height: 120px;
             padding: 8px;
             border: 1px solid rgba(255,255,255,0.9);
             transition: all 0.2s;
@@ -413,7 +413,37 @@
 
         let currDate = new Date(2026, 8, 1);
 
+        // חישוב תאריך עברי מדויק עם תמיכה מלאה בכל הדפדפנים
+        function getHebrewDateInfo(date) {
+            try {
+                const parts = new Intl.DateTimeFormat('he-IL-u-ca-hebrew', {
+                    day: 'numeric',
+                    month: 'short'
+                }).formatToParts(date);
+                
+                const day = parts.find(p => p.type === 'day')?.value || '';
+                const month = parts.find(p => p.type === 'month')?.value || '';
+                
+                const fullDate = new Intl.DateTimeFormat('he-IL-u-ca-hebrew', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                }).format(date);
+                
+                const isRoshChodesh = day === 'א׳' || day === 'א' || day === '1';
+                const display = (isRoshChodesh || date.getDate() === 1) ? `${day} ${month}` : day;
+                
+                return { display, fullDate };
+            } catch (e) {
+                return { display: '', fullDate: '' };
+            }
+        }
+
         const calendarEvents = [
+            // פתיחת הרשמה ופתיחת שנת לימודים תשפ"ז
+            { start: '2026-08-02', end: '2026-08-02', title: '📝 פתיחת ההרשמה לבית המוזיקה', type: 'concert', customStyle: 'background:#fef3c7;color:#b45309;border:1px solid #fde047;' },
+            { start: '2026-09-01', end: '2026-09-01', title: '🔔 פתיחת שנת הלימודים בבית המוזיקה', type: 'concert', customStyle: 'background:#e0f2fe;color:#0369a1;border:1px solid #7dd3fc;' },
+
             // חגים
             { start: '2026-09-11', end: '2026-09-13', title: 'ראש השנה (חופש)', type: 'holiday' },
             { start: '2026-09-20', end: '2026-09-21', title: 'יום כיפור (חופש)', type: 'holiday' },
@@ -425,9 +455,31 @@
             { start: '2027-05-12', end: '2027-05-12', title: 'יום העצמאות', type: 'holiday' },
             { start: '2027-06-10', end: '2027-06-12', title: 'שבועות', type: 'holiday' },
 
+            // אירועי אוקטובר 2026 (כולל טקס 7 באוקטובר וימי מסחג)
+            { start: '2026-10-07', end: '2026-10-07', title: '🕯️ טקס זיכרון לטבח השביעי באוקטובר', type: 'holiday' },
+            { start: '2026-10-11', end: '2026-10-11', title: '🚪 יום פתוח בבית המוזיקה', type: 'concert', customStyle: 'background:#e0f2fe;color:#0369a1;border:1px solid #7dd3fc;' },
+            { start: '2026-10-11', end: '2026-10-11', title: '🎸 מופע חשיפה של סגל בית המוזיקה בכדורי', type: 'concert', customStyle: 'background:#ede9fe;color:#6d28d9;border:1px solid #ddd6fe;' },
+            { start: '2026-10-12', end: '2026-10-12', title: '🚪 יום פתוח בבית המוזיקה', type: 'concert', customStyle: 'background:#e0f2fe;color:#0369a1;border:1px solid #7dd3fc;' },
+            { start: '2026-10-12', end: '2026-10-12', title: '🏛️ השקת אגף ארליך של בית המוזיקה', type: 'concert', customStyle: 'background:#fef3c7;color:#b45309;border:1px solid #fde047;' },
+            { start: '2026-10-13', end: '2026-10-13', title: '🦸 מסחג - גיבורי על קק"ל בשדרות רוטשילד', type: 'concert', customStyle: 'background:#fce7f3;color:#be185d;border:1px solid #fbcfe8;' },
+            { start: '2026-10-14', end: '2026-10-14', title: '🎤 מסחג - בועז שרעבי בפארק יוסי דולה', type: 'concert', customStyle: 'background:#ede9fe;color:#6d28d9;border:1px solid #ddd6fe;' },
+            { start: '2026-10-15', end: '2026-10-15', title: '🎸 מסחג - ג\'ימבו ג\'יי, מזי כהן והדג נחש בפארק יוסי דולה', type: 'concert', customStyle: 'background:#e0e7ff;color:#3730a3;border:1px solid #c7d2fe;' },
+            { start: '2026-10-18', end: '2026-10-18', title: '🎸 גיג סגל בית המוזיקה ברבין ב-10:00', type: 'concert', customStyle: 'background:#d1fae5;color:#065f46;border:1px solid #a7f3d0;' },
+
+            // קונצרט בוקר קלאסי בבית המוזיקה ב-11:30
+            ...['2026-10-12', '2026-11-02', '2026-11-30', '2027-01-18', '2027-02-01', '2027-03-01', '2027-04-12', '2027-05-24', '2027-06-21'].map(d => ({
+                start: d, end: d, title: '🎻 קונצרט בוקר קלאסי בבית המוזיקה ב-11:30', type: 'concert', customStyle: 'background:#e0f2fe;color:#075985;border:1px solid #bae6fd;'
+            })),
+
+            // סינמסחה - פופקורן יין וסרט ב-20:00 (סוף כל חודש מאוקטובר עד יוני בהתאם לתנאי הלו"ז)
+            ...['2026-10-27', '2026-11-24', '2026-12-29', '2027-02-23', '2027-03-30', '2027-04-29', '2027-05-25', '2027-06-29'].map(d => ({
+                start: d, end: d, title: '🍿🍷 סינמסחה - פופקורן יין וסרט ב-20:00', type: 'concert', customStyle: 'background:#fdf2f8;color:#9d174d;border:1px solid #fbcfe8;'
+            })),
+
             // חנוכה
             ...['2026-11-05', '2026-11-11', '2026-11-12', '2026-11-18', '2026-11-19', '2026-11-25', '2026-11-26', '2026-12-01', '2026-12-03', '2026-12-05'].map(d => ({ start: d, end: d, title: '🕎 חזרות למופע חנוכה', type: 'rehearsal' })),
             { start: '2026-12-06', end: '2026-12-06', title: '🌟 הופעת נבחרת הילדים (חנוכה)', type: 'concert' },
+            { start: '2026-12-30', end: '2026-12-30', title: '🎄 מופע נוביגוד של תלמידי/ות כדורי', type: 'concert', customStyle: 'background:#d1fae5;color:#065f46;border:1px solid #a7f3d0;' },
 
             // גיבוש והכנות לאמצע שנה
             ...['2027-01-03', '2027-01-04', '2027-01-07', '2027-01-12', '2027-01-14', '2027-01-20', '2027-01-21'].map(d => ({ start: d, end: d, title: '🎵 גיבוש הכנות וחזרות למופעי אמצע שנה', type: 'rehearsal' })),
@@ -437,6 +489,7 @@
 
             // שירי לוחמים 
             ...['2027-03-03', '2027-03-06', '2027-03-10', '2027-03-13', '2027-03-17', '2027-03-20', '2027-03-24', '2027-03-27', '2027-03-31', '2027-04-03', '2027-04-07', '2027-04-10', '2027-04-14', '2027-04-17'].map(d => ({ start: d, end: d, title: '🎵 חזרות שירי לוחמים', type: 'rehearsal' })),
+            { start: '2027-04-01', end: '2027-04-01', title: '🎂 יום הולדת לבית המוזיקה', type: 'concert', customStyle: 'background:#fef3c7;color:#92400e;border:1px solid #fde68a;' },
             { start: '2027-04-29', end: '2027-04-30', title: '🎵 חזרה לפעילות מלאה', type: 'concert' },
 
             // חזרות סוף שנה בחודש מאי
@@ -460,7 +513,18 @@
             { start: '2027-07-15', end: '2027-07-15', title: '🥁 מופע סוף שנה', type: 'concert', customStyle: 'background:#e0f2fe;color:#0284c7;border:1px solid #38bdf8;' },
             { start: '2027-07-21', end: '2027-07-21', title: '🎻 מופע סוף שנה', type: 'concert', customStyle: 'background:#d1fae5;color:#059669;border:1px solid #34d399;' },
             { start: '2027-07-22', end: '2027-07-22', title: '🎷 מופע סוף שנה', type: 'concert', customStyle: 'background:#fef3c7;color:#d97706;border:1px solid #fbbf24;' },
-            { start: '2027-07-29', end: '2027-07-29', title: '🎤 מופע סוף שנה', type: 'concert', customStyle: 'background:#fce7f3;color:#db2777;border:1px solid #f472b6;' }
+            { start: '2027-07-28', end: '2027-07-28', title: '🎶 מופע סוף שנה מקהלת נגה בבית יגאל אלון', type: 'concert', customStyle: 'background:#ede9fe;color:#5b21b6;border:1px solid #c4b5fd;' },
+            { start: '2027-07-29', end: '2027-07-29', title: '🎤 מופע סוף שנה', type: 'concert', customStyle: 'background:#fce7f3;color:#db2777;border:1px solid #f472b6;' },
+
+            // אוגוסט 2027
+            { start: '2027-08-13', end: '2027-08-13', title: '🎈 פסטיבל הילדים', type: 'concert', customStyle: 'background:#fef3c7;color:#b45309;border:1px solid #fde047;' },
+
+            // פתיחת שנה ואירועי אוקטובר 2027 (תשפ"ח)
+            { start: '2027-10-11', end: '2027-10-11', title: '🚪 יום פתוח בבית המוזיקה', type: 'concert', customStyle: 'background:#e0f2fe;color:#0369a1;border:1px solid #7dd3fc;' },
+            { start: '2027-10-11', end: '2027-10-11', title: '🎸 מופע חשיפה של סגל בית המוזיקה בכדורי', type: 'concert', customStyle: 'background:#ede9fe;color:#6d28d9;border:1px solid #ddd6fe;' },
+            { start: '2027-10-12', end: '2027-10-12', title: '🚪 יום פתוח בבית המוזיקה', type: 'concert', customStyle: 'background:#e0f2fe;color:#0369a1;border:1px solid #7dd3fc;' },
+            { start: '2027-10-12', end: '2027-10-12', title: '🏛️ השקת אגף ארליך של בית המוזיקה', type: 'concert', customStyle: 'background:#fef3c7;color:#b45309;border:1px solid #fde047;' },
+            { start: '2027-10-18', end: '2027-10-18', title: '🎸 גיג סגל בית המוזיקה ברבין ב-10:00', type: 'concert', customStyle: 'background:#d1fae5;color:#065f46;border:1px solid #a7f3d0;' }
         ];
 
         function renderCalendar() {
@@ -494,20 +558,39 @@
             const today = new Date();
             const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
 
+            // תאי חודש קודם
             for (let i = firstDay - 1; i >= 0; i--) {
+                const prevDayNum = prevMonthDays - i;
+                const prevDate = new Date(year, month - 1, prevDayNum);
+                const heb = getHebrewDateInfo(prevDate);
                 const cell = document.createElement('div');
                 cell.className = 'calendar-cell other-month';
-                cell.innerHTML = `<span class="font-bold text-slate-400">${prevMonthDays - i}</span>`;
+                cell.innerHTML = `
+                    <div class="flex justify-between items-baseline mb-1">
+                        <span class="font-bold text-slate-400 leading-none">${prevDayNum}</span>
+                        <span class="text-[0.65rem] font-semibold text-slate-400/70 leading-none">${heb.display}</span>
+                    </div>
+                `;
                 grid.appendChild(cell);
             }
 
+            // תאי החודש הנוכחי
             for (let i = 1; i <= daysInMonth; i++) {
+                const currentCellDate = new Date(year, month, i);
                 const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
                 const cell = document.createElement('div');
                 cell.className = 'calendar-cell hover-trigger';
                 if(dateStr === todayStr) cell.classList.add('today');
 
-                let html = `<span class="font-black text-lg text-slate-800">${i}</span>`;
+                const heb = getHebrewDateInfo(currentCellDate);
+
+                let html = `
+                    <div class="flex justify-between items-baseline mb-1">
+                        <span class="font-black text-lg text-slate-800 leading-none">${i}</span>
+                        <span class="text-[0.7rem] font-extrabold text-sky-700/80 leading-none" title="${heb.fullDate}">${heb.display}</span>
+                    </div>
+                `;
+                
                 const dayEvents = calendarEvents.filter(ev => dateStr >= ev.start && dateStr <= ev.end);
                 dayEvents.forEach(ev => {
                     if (ev.customStyle) {
@@ -521,12 +604,20 @@
                 grid.appendChild(cell);
             }
 
+            // תאי חודש הבא
             const totalCells = firstDay + daysInMonth;
             const remaining = (7 - (totalCells % 7)) % 7;
             for (let i = 1; i <= remaining; i++) {
+                const nextDate = new Date(year, month + 1, i);
+                const heb = getHebrewDateInfo(nextDate);
                 const cell = document.createElement('div');
                 cell.className = 'calendar-cell other-month';
-                cell.innerHTML = `<span class="font-bold text-slate-400">${i}</span>`;
+                cell.innerHTML = `
+                    <div class="flex justify-between items-baseline mb-1">
+                        <span class="font-bold text-slate-400 leading-none">${i}</span>
+                        <span class="text-[0.65rem] font-semibold text-slate-400/70 leading-none">${heb.display}</span>
+                    </div>
+                `;
                 grid.appendChild(cell);
             }
         }
@@ -544,4 +635,3 @@
     </script>
 </body>
 </html>
-```eof

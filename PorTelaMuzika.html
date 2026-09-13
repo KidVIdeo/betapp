@@ -241,7 +241,7 @@
                             { name: "כהן אליעזר", desc: "בס, הרכבים, מפגשים 🎸", link: "https://docs.google.com/spreadsheets/d/1McmfTowf_7kBnRnEc8QFqSd5DQdIumrmO5j_-aFZPv0/edit?gid=1453492726#gid=1453492726", icon: "כ", emoji: "🎸" },
                             { name: "כהן נחשון", desc: "תופים, הרכבים, מפגשים 🥁", link: "https://docs.google.com/spreadsheets/d/1upkIOzAjVOWmB7dK1sNnYjCytMmDLBko0ruT4iZGIlk/edit?gid=1453492726#gid=1453492726", icon: "כ", emoji: "🥁" },
                             { name: "לוריא יהונתן", desc: "פסנתר, גיטרה 🎹🎸", link: "https://docs.google.com/spreadsheets/d/1x-cX9OookGe0dBPvYPj4stn7xCYj26Te_yaUZwWVDk8/edit?gid=1453492726#gid=1453492726", icon: "ל", emoji: "🎹🎸" },
-                            { name: "מז'יבובסקי נתן", desc: "פסנתר, גיטרה, הפקה 🎹🎸", link: "https://docs.google.com/spreadsheets/d/1Rm2YB3wEJ1GSrlYJ2SDzf_8WJJwccjOnuWQE7b0QR_I/edit?gid=1453492726#gid=1453492726", icon: "מ", emoji: "🎹🎸" },
+                            { name: "מז'יבובסקי נתן", desc: "פסנתר, הפקה 🎹🎛️", link: "https://docs.google.com/spreadsheets/d/1Rm2YB3wEJ1GSrlYJ2SDzf_8WJJwccjOnuWQE7b0QR_I/edit?gid=1453492726#gid=1453492726", icon: "מ", emoji: "🎹🎛️" },
                             { name: "פלד אילן", desc: "גיטרה, הרכבים, מפגשים 🎸", link: "https://docs.google.com/spreadsheets/d/125MnKz33blI9K4KFGTnjvNci17VDMkKvsyxy16xEhp8/edit?gid=1453492726#gid=1453492726", icon: "פ", emoji: "🎸" },
                             { name: "רגימוב אריאל", desc: "חליל צד, כינור 🎻", link: "https://docs.google.com/spreadsheets/d/1cbbadzttSYEZzZ9YRuGKyh9y8u2PcB8t3_ul1U6i6V4/edit?gid=1453492726#gid=1453492726", icon: "ר", emoji: "🎻🎶" },
                             { name: "רזומנייה אלינה", desc: "פיתוח קול 🎤", link: "https://docs.google.com/spreadsheets/d/1p5K4aNRByN4D60zuY_gFRHmizdpaNz6HNCeSA87l3Bk/edit?gid=1453492726#gid=1453492726", icon: "ר", emoji: "🎤" },
@@ -288,7 +288,7 @@
                             <span class="px-4 py-1.5 rounded-full text-sm font-bold bg-white/70 text-slate-800 border border-white/80 shadow-sm inline-block mb-4">
                                 לוח אקדמי תשפ"ז
                             </span>
-                            <h2 id="monthTitleDisplay" class="text-4xl md:text-5xl font-black text-slate-800 mb-2 drop-shadow-sm"></h2>
+                            <h2 id="monthTitleDisplay" class="text-4xl md:text-5xl font-black text-slate-800 mb-2 drop-shadow-sm flex flex-wrap items-center justify-center md:justify-start gap-3"></h2>
                             <p class="text-slate-700 font-bold text-lg">לוח אירועים, חזרות ומופעים</p>
                         </div>
                         
@@ -303,7 +303,7 @@
                     <button id="prevMonthBtn" class="p-2 md:px-4 md:py-2 bg-white rounded-xl shadow-sm hover:bg-slate-50 text-slate-700 font-bold transition flex items-center gap-2 border border-slate-200">
                         <i data-lucide="chevron-right" class="w-5 h-5"></i><span class="hidden sm:inline">חודש קודם</span>
                     </button>
-                    <h2 id="monthYearDisplay" class="text-2xl md:text-3xl font-black text-slate-800 text-center flex-1"></h2>
+                    <h2 id="monthYearDisplay" class="text-2xl md:text-3xl font-black text-slate-800 text-center flex-1 flex flex-wrap items-center justify-center gap-2"></h2>
                     <button id="nextMonthBtn" class="p-2 md:px-4 md:py-2 bg-white rounded-xl shadow-sm hover:bg-slate-50 text-slate-700 font-bold transition flex items-center gap-2 border border-slate-200">
                         <span class="hidden sm:inline">חודש הבא</span><i data-lucide="chevron-left" class="w-5 h-5"></i>
                     </button>
@@ -395,7 +395,6 @@
             'hsl(330, 85%, 93%)'  // 11 Dec
         ];
 
-        /* מפת קבצי ה-JPG המדויקת והמלאה לכל 12 חודשי השנה */
         const monthImages = [
             'img01.jpg',   // 0 ינואר
             'img02.jpg',   // 1 פברואר
@@ -413,38 +412,205 @@
 
         let currDate = new Date(2026, 8, 1);
 
-        // חישוב תאריך עברי מדויק עם תמיכה מלאה בכל הדפדפנים
-        function getHebrewDateInfo(date) {
-            try {
-                const parts = new Intl.DateTimeFormat('he-IL-u-ca-hebrew', {
-                    day: 'numeric',
-                    month: 'short'
-                }).formatToParts(date);
-                
-                const day = parts.find(p => p.type === 'day')?.value || '';
-                const month = parts.find(p => p.type === 'month')?.value || '';
-                
-                const fullDate = new Intl.DateTimeFormat('he-IL-u-ca-hebrew', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric'
-                }).format(date);
-                
-                const isRoshChodesh = day === 'א׳' || day === 'א' || day === '1';
-                const display = (isRoshChodesh || date.getDate() === 1) ? `${day} ${month}` : day;
-                
-                return { display, fullDate };
-            } catch (e) {
-                return { display: '', fullDate: '' };
+        const hebrewDateMap = {
+            '2026-08-01': { day: 'י"ז', month: 'אב' }, '2026-08-02': { day: 'י"ח', month: 'אב' }, '2026-08-03': { day: 'י"ט', month: 'אב' },
+            '2026-08-04': { day: 'כ\'', month: 'אב' }, '2026-08-05': { day: 'כ"א', month: 'אב' }, '2026-08-06': { day: 'כ"ב', month: 'אב' },
+            '2026-08-07': { day: 'כ"ג', month: 'אב' }, '2026-08-08': { day: 'כ"ד', month: 'אב' }, '2026-08-09': { day: 'כ"ה', month: 'אב' },
+            '2026-08-10': { day: 'כ"ו', month: 'אב' }, '2026-08-11': { day: 'כ"ז', month: 'אב' }, '2026-08-12': { day: 'כ"ח', month: 'אב' },
+            '2026-08-13': { day: 'כ"ט', month: 'אב' }, '2026-08-14': { day: 'א\'', month: 'אלול' }, '2026-08-15': { day: 'ב\'', month: 'אלול' },
+            '2026-08-16': { day: 'ג\'', month: 'אלול' }, '2026-08-17': { day: 'ד\'', month: 'אלול' }, '2026-08-18': { day: 'ה\'', month: 'אלול' },
+            '2026-08-19': { day: 'ו\'', month: 'אלול' }, '2026-08-20': { day: 'ז\'', month: 'אלול' }, '2026-08-21': { day: 'ח\'', month: 'אלול' },
+            '2026-08-22': { day: 'ט\'', month: 'אלול' }, '2026-08-23': { day: 'י\'', month: 'אלול' }, '2026-08-24': { day: 'י"א', month: 'אלול' },
+            '2026-08-25': { day: 'י"ב', month: 'אלול' }, '2026-08-26': { day: 'י"ג', month: 'אלול' }, '2026-08-27': { day: 'י"ד', month: 'אלול' },
+            '2026-08-28': { day: 'ט"ו', month: 'אלול' }, '2026-08-29': { day: 'ט"ז', month: 'אלול' }, '2026-08-30': { day: 'י"ז', month: 'אלול' },
+            '2026-08-31': { day: 'י"ח', month: 'אלול' },
+
+            '2026-09-01': { day: 'י"ט', month: 'אלול' }, '2026-09-02': { day: 'כ\'', month: 'אלול' }, '2026-09-03': { day: 'כ"א', month: 'אלול' },
+            '2026-09-04': { day: 'כ"ב', month: 'אלול' }, '2026-09-05': { day: 'כ"ג', month: 'אלול' }, '2026-09-06': { day: 'כ"ד', month: 'אלול' },
+            '2026-09-07': { day: 'כ"ה', month: 'אלול' }, '2026-09-08': { day: 'כ"ו', month: 'אלול' }, '2026-09-09': { day: 'כ"ז', month: 'אלול' },
+            '2026-09-10': { day: 'כ"ח', month: 'אלול' }, '2026-09-11': { day: 'כ"ט', month: 'אלול' }, '2026-09-12': { day: 'א\'', month: 'תשרי' },
+            '2026-09-13': { day: 'ב\'', month: 'תשרי' }, '2026-09-14': { day: 'ג\'', month: 'תשרי' }, '2026-09-15': { day: 'ד\'', month: 'תשרי' },
+            '2026-09-16': { day: 'ה\'', month: 'תשרי' }, '2026-09-17': { day: 'ו\'', month: 'תשרי' }, '2026-09-18': { day: 'ז\'', month: 'תשרי' },
+            '2026-09-19': { day: 'ח\'', month: 'תשרי' }, '2026-09-20': { day: 'ט\'', month: 'תשרי' }, '2026-09-21': { day: 'י\'', month: 'תשרי' },
+            '2026-09-22': { day: 'י"א', month: 'תשרי' }, '2026-09-23': { day: 'י"ב', month: 'תשרי' }, '2026-09-24': { day: 'י"ג', month: 'תשרי' },
+            '2026-09-25': { day: 'י"ד', month: 'תשרי' }, '2026-09-26': { day: 'ט"ו', month: 'תשרי' }, '2026-09-27': { day: 'ט"ז', month: 'תשרי' },
+            '2026-09-28': { day: 'י"ז', month: 'תשרי' }, '2026-09-29': { day: 'י"ח', month: 'תשרי' }, '2026-09-30': { day: 'י"ט', month: 'תשרי' },
+
+            '2026-10-01': { day: 'כ\'', month: 'תשרי' }, '2026-10-02': { day: 'כ"א', month: 'תשרי' }, '2026-10-03': { day: 'כ"ב', month: 'תשרי' },
+            '2026-10-04': { day: 'כ"ג', month: 'תשרי' }, '2026-10-05': { day: 'כ"ד', month: 'תשרי' }, '2026-10-06': { day: 'כ"ה', month: 'תשרי' },
+            '2026-10-07': { day: 'כ"ו', month: 'תשרי' }, '2026-10-08': { day: 'כ"ז', month: 'תשרי' }, '2026-10-09': { day: 'כ"ח', month: 'תשרי' },
+            '2026-10-10': { day: 'כ"ט', month: 'תשרי' }, '2026-10-11': { day: 'ל\'', month: 'תשרי' }, '2026-10-12': { day: 'א\'', month: 'חשוון' },
+            '2026-10-13': { day: 'ב\'', month: 'חשוון' }, '2026-10-14': { day: 'ג\'', month: 'חשוון' }, '2026-10-15': { day: 'ד\'', month: 'חשוון' },
+            '2026-10-16': { day: 'ה\'', month: 'חשוון' }, '2026-10-17': { day: 'ו\'', month: 'חשוון' }, '2026-10-18': { day: 'ז\'', month: 'חשוון' },
+            '2026-10-19': { day: 'ח\'', month: 'חשוון' }, '2026-10-20': { day: 'ט\'', month: 'חשוון' }, '2026-10-21': { day: 'י\'', month: 'חשוון' },
+            '2026-10-22': { day: 'י"א', month: 'חשוון' }, '2026-10-23': { day: 'י"ב', month: 'חשוון' }, '2026-10-24': { day: 'י"ג', month: 'חשוון' },
+            '2026-10-25': { day: 'י"ד', month: 'חשוון' }, '2026-10-26': { day: 'ט"ו', month: 'חשוון' }, '2026-10-27': { day: 'ט"ז', month: 'חשוון' },
+            '2026-10-28': { day: 'י"ז', month: 'חשוון' }, '2026-10-29': { day: 'י"ח', month: 'חשוון' }, '2026-10-30': { day: 'י"ט', month: 'חשוון' },
+            '2026-10-31': { day: 'כ\'', month: 'חשוון' },
+
+            '2026-11-01': { day: 'כ"א', month: 'חשוון' }, '2026-11-02': { day: 'כ"ב', month: 'חשוון' }, '2026-11-03': { day: 'כ"ג', month: 'חשוון' },
+            '2026-11-04': { day: 'כ"ד', month: 'חשוון' }, '2026-11-05': { day: 'כ"ה', month: 'חשוון' }, '2026-11-06': { day: 'כ"ו', month: 'חשוון' },
+            '2026-11-07': { day: 'כ"ז', month: 'חשוון' }, '2026-11-08': { day: 'כ"ח', month: 'חשוון' }, '2026-11-09': { day: 'כ"ט', month: 'חשוון' },
+            '2026-11-10': { day: 'ל\'', month: 'חשוון' }, '2026-11-11': { day: 'א\'', month: 'כסלו' }, '2026-11-12': { day: 'ב\'', month: 'כסלו' },
+            '2026-11-13': { day: 'ג\'', month: 'כסלו' }, '2026-11-14': { day: 'ד\'', month: 'כסלו' }, '2026-11-15': { day: 'ה\'', month: 'כסלו' },
+            '2026-11-16': { day: 'ו\'', month: 'כסלו' }, '2026-11-17': { day: 'ז\'', month: 'כסלו' }, '2026-11-18': { day: 'ח\'', month: 'כסלו' },
+            '2026-11-19': { day: 'ט\'', month: 'כסלו' }, '2026-11-20': { day: 'י\'', month: 'כסלו' }, '2026-11-21': { day: 'י"א', month: 'כסלו' },
+            '2026-11-22': { day: 'י"ב', month: 'כסלו' }, '2026-11-23': { day: 'י"ג', month: 'כסלו' }, '2026-11-24': { day: 'י"ד', month: 'כסלו' },
+            '2026-11-25': { day: 'ט"ו', month: 'כסלו' }, '2026-11-26': { day: 'ט"ז', month: 'כסלו' }, '2026-11-27': { day: 'י"ז', month: 'כסלו' },
+            '2026-11-28': { day: 'י"ח', month: 'כסלו' }, '2026-11-29': { day: 'י"ט', month: 'כסלו' }, '2026-11-30': { day: 'כ\'', month: 'כסלו' },
+
+            '2026-12-01': { day: 'כ"א', month: 'כסלו' }, '2026-12-02': { day: 'כ"ב', month: 'כסלו' }, '2026-12-03': { day: 'כ"ג', month: 'כסלו' },
+            '2026-12-04': { day: 'כ"ד', month: 'כסלו' }, '2026-12-05': { day: 'כ"ה', month: 'כסלו' }, '2026-12-06': { day: 'כ"ו', month: 'כסלו' },
+            '2026-12-07': { day: 'כ"ז', month: 'כסלו' }, '2026-12-08': { day: 'כ"ח', month: 'כסלו' }, '2026-12-09': { day: 'כ"ט', month: 'כסלו' },
+            '2026-12-10': { day: 'ל\'', month: 'כסלו' }, '2026-12-11': { day: 'א\'', month: 'טבת' }, '2026-12-12': { day: 'ב\'', month: 'טבת' },
+            '2026-12-13': { day: 'ג\'', month: 'טבת' }, '2026-12-14': { day: 'ד\'', month: 'טבת' }, '2026-12-15': { day: 'ה\'', month: 'טבת' },
+            '2026-12-16': { day: 'ו\'', month: 'טבת' }, '2026-12-17': { day: 'ז\'', month: 'טבת' }, '2026-12-18': { day: 'ח\'', month: 'טבת' },
+            '2026-12-19': { day: 'ט\'', month: 'טבת' }, '2026-12-20': { day: 'י\'', month: 'טבת' }, '2026-12-21': { day: 'י"א', month: 'טבת' },
+            '2026-12-22': { day: 'י"ב', month: 'טבת' }, '2026-12-23': { day: 'י"ג', month: 'טבת' }, '2026-12-24': { day: 'י"ד', month: 'טבת' },
+            '2026-12-25': { day: 'ט"ו', month: 'טבת' }, '2026-12-26': { day: 'ט"ז', month: 'טבת' }, '2026-12-27': { day: 'י"ז', month: 'טבת' },
+            '2026-12-28': { day: 'י"ח', month: 'טבת' }, '2026-12-29': { day: 'י"ט', month: 'טבת' }, '2026-12-30': { day: 'כ\'', month: 'טבת' },
+            '2026-12-31': { day: 'כ"א', month: 'טבת' },
+
+            '2027-01-01': { day: 'כ"ב', month: 'טבת' }, '2027-01-02': { day: 'כ"ג', month: 'טבת' }, '2027-01-03': { day: 'כ"ד', month: 'טבת' },
+            '2027-01-04': { day: 'כ"ה', month: 'טבת' }, '2027-01-05': { day: 'כ"ו', month: 'טבת' }, '2027-01-06': { day: 'כ"ז', month: 'טבת' },
+            '2027-01-07': { day: 'כ"ח', month: 'טבת' }, '2027-01-08': { day: 'כ"ט', month: 'טבת' }, '2027-01-09': { day: 'א\'', month: 'שבט' },
+            '2027-01-10': { day: 'ב\'', month: 'שבט' }, '2027-01-11': { day: 'ג\'', month: 'שבט' }, '2027-01-12': { day: 'ד\'', month: 'שבט' },
+            '2027-01-13': { day: 'ה\'', month: 'שבט' }, '2027-01-14': { day: 'ו\'', month: 'שבט' }, '2027-01-15': { day: 'ז\'', month: 'שבט' },
+            '2027-01-16': { day: 'ח\'', month: 'שבט' }, '2027-01-17': { day: 'ט\'', month: 'שבט' }, '2027-01-18': { day: 'י\'', month: 'שבט' },
+            '2027-01-19': { day: 'י"א', month: 'שבט' }, '2027-01-20': { day: 'י"ב', month: 'שבט' }, '2027-01-21': { day: 'י"ג', month: 'שבט' },
+            '2027-01-22': { day: 'י"ד', month: 'שבט' }, '2027-01-23': { day: 'ט"ו', month: 'שבט' }, '2027-01-24': { day: 'ט"ז', month: 'שבט' },
+            '2027-01-25': { day: 'י"ז', month: 'שבט' }, '2027-01-26': { day: 'י"ח', month: 'שבט' }, '2027-01-27': { day: 'י"ט', month: 'שבט' },
+            '2027-01-28': { day: 'כ\'', month: 'שבט' }, '2027-01-29': { day: 'כ"א', month: 'שבט' }, '2027-01-30': { day: 'כ"ב', month: 'שבט' },
+            '2027-01-31': { day: 'כ"ג', month: 'שבט' },
+
+            '2027-02-01': { day: 'כ"ד', month: 'שבט' }, '2027-02-02': { day: 'כ"ה', month: 'שבט' }, '2027-02-03': { day: 'כ"ו', month: 'שבט' },
+            '2027-02-04': { day: 'כ"ז', month: 'שבט' }, '2027-02-05': { day: 'כ"ח', month: 'שבט' }, '2027-02-06': { day: 'כ"ט', month: 'שבט' },
+            '2027-02-07': { day: 'ל\'', month: 'שבט' }, '2027-02-08': { day: 'א\'', month: 'אדר' }, '2027-02-09': { day: 'ב\'', month: 'אדר' },
+            '2027-02-10': { day: 'ג\'', month: 'אדר' }, '2027-02-11': { day: 'ד\'', month: 'אדר' }, '2027-02-12': { day: 'ה\'', month: 'אדר' },
+            '2027-02-13': { day: 'ו\'', month: 'אדר' }, '2027-02-14': { day: 'ז\'', month: 'אדר' }, '2027-02-15': { day: 'ח\'', month: 'אדר' },
+            '2027-02-16': { day: 'ט\'', month: 'אדר' }, '2027-02-17': { day: 'י\'', month: 'אדר' }, '2027-02-18': { day: 'י"א', month: 'אדר' },
+            '2027-02-19': { day: 'י"ב', month: 'אדר' }, '2027-02-20': { day: 'י"ג', month: 'אדר' }, '2027-02-21': { day: 'י"ד', month: 'אדר' },
+            '2027-02-22': { day: 'ט"ו', month: 'אדר' }, '2027-02-23': { day: 'ט"ז', month: 'אדר' }, '2027-02-24': { day: 'י"ז', month: 'אדר' },
+            '2027-02-25': { day: 'י"ח', month: 'אדר' }, '2027-02-26': { day: 'י"ט', month: 'אדר' }, '2027-02-27': { day: 'כ\'', month: 'אדר' },
+            '2027-02-28': { day: 'כ"א', month: 'אדר' },
+
+            '2027-03-01': { day: 'כ"ב', month: 'אדר' }, '2027-03-02': { day: 'כ"ג', month: 'אדר' }, '2027-03-03': { day: 'כ"ד', month: 'אדר' },
+            '2027-03-04': { day: 'כ"ה', month: 'אדר' }, '2027-03-05': { day: 'כ"ו', month: 'אדר' }, '2027-03-06': { day: 'כ"ז', month: 'אדר' },
+            '2027-03-07': { day: 'כ"ח', month: 'אדר' }, '2027-03-08': { day: 'כ"ט', month: 'אדר' }, '2027-03-09': { day: 'ל\'', month: 'אדר' },
+            '2027-03-10': { day: 'א\'', month: 'ניסן' }, '2027-03-11': { day: 'ב\'', month: 'ניסן' }, '2027-03-12': { day: 'ג\'', month: 'ניסן' },
+            '2027-03-13': { day: 'ד\'', month: 'ניסן' }, '2027-03-14': { day: 'ה\'', month: 'ניסן' }, '2027-03-15': { day: 'ו\'', month: 'ניסן' },
+            '2027-03-16': { day: 'ז\'', month: 'ניסן' }, '2027-03-17': { day: 'ח\'', month: 'ניסן' }, '2027-03-18': { day: 'ט\'', month: 'ניסן' },
+            '2027-03-19': { day: 'י\'', month: 'ניסן' }, '2027-03-20': { day: 'י"א', month: 'ניסן' }, '2027-03-21': { day: 'י"ב', month: 'ניסן' },
+            '2027-03-22': { day: 'י"ג', month: 'ניסן' }, '2027-03-23': { day: 'י"ד', month: 'ניסן' }, '2027-03-24': { day: 'ט"ו', month: 'ניסן' },
+            '2027-03-25': { day: 'ט"ז', month: 'ניסן' }, '2027-03-26': { day: 'י"ז', month: 'ניסן' }, '2027-03-27': { day: 'י"ח', month: 'ניסן' },
+            '2027-03-28': { day: 'י"ט', month: 'ניסן' }, '2027-03-29': { day: 'כ\'', month: 'ניסן' }, '2027-03-30': { day: 'כ"א', month: 'ניסן' },
+            '2027-03-31': { day: 'כ"ב', month: 'ניסן' },
+
+            '2027-04-01': { day: 'כ"ג', month: 'ניסן' }, '2027-04-02': { day: 'כ"ד', month: 'ניסן' }, '2027-04-03': { day: 'כ"ה', month: 'ניסן' },
+            '2027-04-04': { day: 'כ"ו', month: 'ניסן' }, '2027-04-05': { day: 'כ"ז', month: 'ניסן' }, '2027-04-06': { day: 'כ"ח', month: 'ניסן' },
+            '2027-04-07': { day: 'כ"ט', month: 'ניסן' }, '2027-04-08': { day: 'א\'', month: 'אייר' }, '2027-04-09': { day: 'ב\'', month: 'אייר' },
+            '2027-04-10': { day: 'ג\'', month: 'אייר' }, '2027-04-11': { day: 'ד\'', month: 'אייר' }, '2027-04-12': { day: 'ה\'', month: 'אייר' },
+            '2027-04-13': { day: 'ו\'', month: 'אייר' }, '2027-04-14': { day: 'ז\'', month: 'אייר' }, '2027-04-15': { day: 'ח\'', month: 'אייר' },
+            '2027-04-16': { day: 'ט\'', month: 'אייר' }, '2027-04-17': { day: 'י\'', month: 'אייר' }, '2027-04-18': { day: 'י"א', month: 'אייר' },
+            '2027-04-19': { day: 'י"ב', month: 'אייר' }, '2027-04-20': { day: 'י"ג', month: 'אייר' }, '2027-04-21': { day: 'י"ד', month: 'אייר' },
+            '2027-04-22': { day: 'ט"ו', month: 'אייר' }, '2027-04-23': { day: 'ט"ז', month: 'אייר' }, '2027-04-24': { day: 'י"ז', month: 'אייר' },
+            '2027-04-25': { day: 'י"ח', month: 'אייר' }, '2027-04-26': { day: 'י"ט', month: 'אייר' }, '2027-04-27': { day: 'כ\'', month: 'אייר' },
+            '2027-04-28': { day: 'כ"א', month: 'אייר' }, '2027-04-29': { day: 'כ"ב', month: 'אייר' }, '2027-04-30': { day: 'כ"ג', month: 'אייר' },
+
+            '2027-05-01': { day: 'כ"ד', month: 'אייר' }, '2027-05-02': { day: 'כ"ה', month: 'אייר' }, '2027-05-03': { day: 'כ"ו', month: 'אייר' },
+            '2027-05-04': { day: 'כ"ז', month: 'אייר' }, '2027-05-05': { day: 'כ"ח', month: 'אייר' }, '2027-05-06': { day: 'כ"ט', month: 'אייר' },
+            '2027-05-07': { day: 'א\'', month: 'סיוון' }, '2027-05-08': { day: 'ב\'', month: 'סיוון' }, '2027-05-09': { day: 'ג\'', month: 'סיוון' },
+            '2027-05-10': { day: 'ד\'', month: 'סיוון' }, '2027-05-11': { day: 'ה\'', month: 'סיוון' }, '2027-05-12': { day: 'ו\'', month: 'סיוון' },
+            '2027-05-13': { day: 'ז\'', month: 'סיוון' }, '2027-05-14': { day: 'ח\'', month: 'סיוון' }, '2027-05-15': { day: 'ט\'', month: 'סיוון' },
+            '2027-05-16': { day: 'י\'', month: 'סיוון' }, '2027-05-17': { day: 'י"א', month: 'סיוון' }, '2027-05-18': { day: 'י"ב', month: 'סיוון' },
+            '2027-05-19': { day: 'י"ג', month: 'סיוון' }, '2027-05-20': { day: 'י"ד', month: 'סיוון' }, '2027-05-21': { day: 'ט"ו', month: 'סיוון' },
+            '2027-05-22': { day: 'ט"ז', month: 'סיוון' }, '2027-05-23': { day: 'י"ז', month: 'סיוון' }, '2027-05-24': { day: 'י"ח', month: 'סיוון' },
+            '2027-05-25': { day: 'י"ט', month: 'סיוון' }, '2027-05-26': { day: 'כ\'', month: 'סיוון' }, '2027-05-27': { day: 'כ"א', month: 'סיוון' },
+            '2027-05-28': { day: 'כ"ב', month: 'סיוון' }, '2027-05-29': { day: 'כ"ג', month: 'סיוון' }, '2027-05-30': { day: 'כ"ד', month: 'סיוון' },
+            '2027-05-31': { day: 'כ"ה', month: 'סיוון' },
+
+            '2027-06-01': { day: 'כ"ו', month: 'סיוון' }, '2027-06-02': { day: 'כ"ז', month: 'סיוון' }, '2027-06-03': { day: 'כ"ח', month: 'סיוון' },
+            '2027-06-04': { day: 'כ"ט', month: 'סיוון' }, '2027-06-05': { day: 'ל\'', month: 'סיוון' }, '2027-06-06': { day: 'א\'', month: 'תמוז' },
+            '2027-06-07': { day: 'ב\'', month: 'תמוז' }, '2027-06-08': { day: 'ג\'', month: 'תמוז' }, '2027-06-09': { day: 'ד\'', month: 'תמוז' },
+            '2027-06-10': { day: 'ה\'', month: 'תמוז' }, '2027-06-11': { day: 'ו\'', month: 'תמוז' }, '2027-06-12': { day: 'ז\'', month: 'תמוז' },
+            '2027-06-13': { day: 'ח\'', month: 'תמוז' }, '2027-06-14': { day: 'ט\'', month: 'תמוז' }, '2027-06-15': { day: 'י\'', month: 'תמוז' },
+            '2027-06-16': { day: 'י"א', month: 'תמוז' }, '2027-06-17': { day: 'י"ב', month: 'תמוז' }, '2027-06-18': { day: 'י"ג', month: 'תמוז' },
+            '2027-06-19': { day: 'י"ד', month: 'תמוז' }, '2027-06-20': { day: 'ט"ו', month: 'תמוז' }, '2027-06-21': { day: 'ט"ז', month: 'תמוז' },
+            '2027-06-22': { day: 'י"ז', month: 'תמוז' }, '2027-06-23': { day: 'י"ח', month: 'תמוז' }, '2027-06-24': { day: 'י"ט', month: 'תמוז' },
+            '2027-06-25': { day: 'כ\'', month: 'תמוז' }, '2027-06-26': { day: 'כ"א', month: 'תמוז' }, '2027-06-27': { day: 'כ"ב', month: 'תמוז' },
+            '2027-06-28': { day: 'כ"ג', month: 'תמוז' }, '2027-06-29': { day: 'כ"ד', month: 'תמוז' }, '2027-06-30': { day: 'כ"ה', month: 'תמוז' },
+
+            '2027-07-01': { day: 'כ"ו', month: 'תמוז' }, '2027-07-02': { day: 'כ"ז', month: 'תמוז' }, '2027-07-03': { day: 'כ"ח', month: 'תמוז' },
+            '2027-07-04': { day: 'כ"ט', month: 'תמוז' }, '2027-07-05': { day: 'א\'', month: 'אב' }, '2027-07-06': { day: 'ב\'', month: 'אב' },
+            '2027-07-07': { day: 'ג\'', month: 'אב' }, '2027-07-08': { day: 'ד\'', month: 'אב' }, '2027-07-09': { day: 'ה\'', month: 'אב' },
+            '2027-07-10': { day: 'ו\'', month: 'אב' }, '2027-07-11': { day: 'ז\'', month: 'אב' }, '2027-07-12': { day: 'ח\'', month: 'אב' },
+            '2027-07-13': { day: 'ט\'', month: 'אב' }, '2027-07-14': { day: 'י\'', month: 'אב' }, '2027-07-15': { day: 'י"א', month: 'אב' },
+            '2027-07-16': { day: 'י"ב', month: 'אב' }, '2027-07-17': { day: 'י"ג', month: 'אב' }, '2027-07-18': { day: 'י"ד', month: 'אב' },
+            '2027-07-19': { day: 'ט"ו', month: 'אב' }, '2027-07-20': { day: 'ט"ז', month: 'אב' }, '2027-07-21': { day: 'י"ז', month: 'אב' },
+            '2027-07-22': { day: 'י"ח', month: 'אב' }, '2027-07-23': { day: 'י"ט', month: 'אב' }, '2027-07-24': { day: 'כ\'', month: 'אב' },
+            '2027-07-25': { day: 'כ"א', month: 'אב' }, '2027-07-26': { day: 'כ"ב', month: 'אב' }, '2027-07-27': { day: 'כ"ג', month: 'אב' },
+            '2027-07-28': { day: 'כ"ד', month: 'אב' }, '2027-07-29': { day: 'כ"ה', month: 'אב' }, '2027-07-30': { day: 'כ"ו', month: 'אב' },
+            '2027-07-31': { day: 'כ"ז', month: 'אב' },
+
+            '2027-08-01': { day: 'כ"ח', month: 'אב' }, '2027-08-02': { day: 'כ"ט', month: 'אב' }, '2027-08-03': { day: 'ל\'', month: 'אב' },
+            '2027-08-04': { day: 'א\'', month: 'אלול' }, '2027-08-05': { day: 'ב\'', month: 'אלול' }, '2027-08-06': { day: 'ג\'', month: 'אלול' },
+            '2027-08-07': { day: 'ד\'', month: 'אלול' }, '2027-08-08': { day: 'ה\'', month: 'אלול' }, '2027-08-09': { day: 'ו\'', month: 'אלול' },
+            '2027-08-10': { day: 'ז\'', month: 'אלול' }, '2027-08-11': { day: 'ח\'', month: 'אלול' }, '2027-08-12': { day: 'ט\'', month: 'אלול' },
+            '2027-08-13': { day: 'י\'', month: 'אלול' }, '2027-08-14': { day: 'י"א', month: 'אלול' }, '2027-08-15': { day: 'י"ב', month: 'אלול' },
+            '2027-08-16': { day: 'י"ג', month: 'אלול' }, '2027-08-17': { day: 'י"ד', month: 'אלול' }, '2027-08-18': { day: 'ט"ו', month: 'אלול' },
+            '2027-08-19': { day: 'ט"ז', month: 'אלול' }, '2027-08-20': { day: 'י"ז', month: 'אלול' }, '2027-08-21': { day: 'י"ח', month: 'אלול' },
+            '2027-08-22': { day: 'י"ט', month: 'אלול' }, '2027-08-23': { day: 'כ\'', month: 'אלול' }, '2027-08-24': { day: 'כ"א', month: 'אלול' },
+            '2027-08-25': { day: 'כ"ב', month: 'אלול' }, '2027-08-26': { day: 'כ"ג', month: 'אלול' }, '2027-08-27': { day: 'כ"ד', month: 'אלול' },
+            '2027-08-28': { day: 'כ"ה', month: 'אלול' }, '2027-08-29': { day: 'כ"ו', month: 'אלול' }, '2027-08-30': { day: 'כ"ז', month: 'אלול' },
+            '2027-08-31': { day: 'כ"ח', month: 'אלול' },
+
+            '2027-09-01': { day: 'כ"ט', month: 'אלול' }, '2027-09-02': { day: 'א\'', month: 'תשרי' }, '2027-09-03': { day: 'ב\'', month: 'תשרי' },
+            '2027-09-04': { day: 'ג\'', month: 'תשרי' }, '2027-09-05': { day: 'ד\'', month: 'תשרי' }, '2027-09-06': { day: 'ה\'', month: 'תשרי' },
+            '2027-09-07': { day: 'ו\'', month: 'תשרי' }, '2027-09-08': { day: 'ז\'', month: 'תשרי' }, '2027-09-09': { day: 'ח\'', month: 'תשרי' },
+            '2027-09-10': { day: 'ט\'', month: 'תשרי' }, '2027-09-11': { day: 'י\'', month: 'תשרי' }, '2027-09-12': { day: 'י"א', month: 'תשרי' },
+            '2027-09-13': { day: 'י"ב', month: 'תשרי' }, '2027-09-14': { day: 'י"ג', month: 'תשרי' }, '2027-09-15': { day: 'י"ד', month: 'תשרי' },
+            '2027-09-16': { day: 'ט"ו', month: 'תשרי' }, '2027-09-17': { day: 'ט"ז', month: 'תשרי' }, '2027-09-18': { day: 'י"ז', month: 'תשרי' },
+            '2027-09-19': { day: 'י"ח', month: 'תשרי' }, '2027-09-20': { day: 'י"ט', month: 'תשרי' }, '2027-09-21': { day: 'כ\'', month: 'תשרי' },
+            '2027-09-22': { day: 'כ"א', month: 'תשרי' }, '2027-09-23': { day: 'כ"ב', month: 'תשרי' }, '2027-09-24': { day: 'כ"ג', month: 'תשרי' },
+            '2027-09-25': { day: 'כ"ד', month: 'תשרי' }, '2027-09-26': { day: 'כ"ה', month: 'תשרי' }, '2027-09-27': { day: 'כ"ו', month: 'תשרי' },
+            '2027-09-28': { day: 'כ"ז', month: 'תשרי' }, '2027-09-29': { day: 'כ"ח', month: 'תשרי' }, '2027-09-30': { day: 'כ"ט', month: 'תשרי' },
+
+            '2027-10-01': { day: 'ל\'', month: 'תשרי' }, '2027-10-02': { day: 'א\'', month: 'חשוון' }, '2027-10-03': { day: 'ב\'', month: 'חשוון' },
+            '2027-10-04': { day: 'ג\'', month: 'חשוון' }, '2027-10-05': { day: 'ד\'', month: 'חשוון' }, '2027-10-06': { day: 'ה\'', month: 'חשוון' },
+            '2027-10-07': { day: 'ו\'', month: 'חשוון' }, '2027-10-08': { day: 'ז\'', month: 'חשוון' }, '2027-10-09': { day: 'ח\'', month: 'חשוון' },
+            '2027-10-10': { day: 'ט\'', month: 'חשוון' }, '2027-10-11': { day: 'י\'', month: 'חשוון' }, '2027-10-12': { day: 'י"א', month: 'חשוון' },
+            '2027-10-13': { day: 'י"ב', month: 'חשוון' }, '2027-10-14': { day: 'י"ג', month: 'חשוון' }, '2027-10-15': { day: 'י"ד', month: 'חשוון' },
+            '2027-10-16': { day: 'ט"ו', month: 'חשוון' }, '2027-10-17': { day: 'ט"ז', month: 'חשוון' }, '2027-10-18': { day: 'י"ז', month: 'חשוון' },
+            '2027-10-19': { day: 'י"ח', month: 'חשוון' }, '2027-10-20': { day: 'י"ט', month: 'חשוון' }, '2027-10-21': { day: 'כ\'', month: 'חשוון' },
+            '2027-10-22': { day: 'כ"א', month: 'חשוון' }, '2027-10-23': { day: 'כ"ב', month: 'חשוון' }, '2027-10-24': { day: 'כ"ג', month: 'חשוון' },
+            '2027-10-25': { day: 'כ"ד', month: 'חשוון' }, '2027-10-26': { day: 'כ"ה', month: 'חשוון' }, '2027-10-27': { day: 'כ"ו', month: 'חשוון' },
+            '2027-10-28': { day: 'כ"ז', month: 'חשוון' }, '2027-10-29': { day: 'כ"ח', month: 'חשוון' }, '2027-10-30': { day: 'כ"ט', month: 'חשוון' },
+            '2027-10-31': { day: 'ל\'', month: 'חשוון' }
+        };
+
+        function getPrimaryHebrewMonth(year, month) {
+            const midDateStr = `${year}-${String(month+1).padStart(2,'0')}-15`;
+            const match = hebrewDateMap[midDateStr];
+            if (match) return match.month;
+            return '';
+        }
+
+        function getHebrewDateInfo(dateStr, dayNum) {
+            const match = hebrewDateMap[dateStr];
+            if (match) {
+                const showMonth = (match.day === 'א\'') || (dayNum === 1);
+                return {
+                    display: showMonth ? `${match.day} ${match.month}` : match.day,
+                    fullDate: `${match.day} ב${match.month}`
+                };
             }
+            return { display: '', fullDate: '' };
         }
 
         const calendarEvents = [
-            // פתיחת הרשמה ופתיחת שנת לימודים תשפ"ז
             { start: '2026-08-02', end: '2026-08-02', title: '📝 פתיחת ההרשמה לבית המוזיקה', type: 'concert', customStyle: 'background:#fef3c7;color:#b45309;border:1px solid #fde047;' },
             { start: '2026-09-01', end: '2026-09-01', title: '🔔 פתיחת שנת הלימודים בבית המוזיקה', type: 'concert', customStyle: 'background:#e0f2fe;color:#0369a1;border:1px solid #7dd3fc;' },
 
-            // חגים
             { start: '2026-09-11', end: '2026-09-13', title: 'ראש השנה (חופש)', type: 'holiday' },
             { start: '2026-09-20', end: '2026-09-21', title: 'יום כיפור (חופש)', type: 'holiday' },
             { start: '2026-09-25', end: '2026-10-03', title: 'סוכות (חוגים כרגיל בחוה"מ)', type: 'halfday' },
@@ -455,7 +621,6 @@
             { start: '2027-05-12', end: '2027-05-12', title: 'יום העצמאות', type: 'holiday' },
             { start: '2027-06-10', end: '2027-06-12', title: 'שבועות', type: 'holiday' },
 
-            // אירועי אוקטובר 2026 (כולל טקס 7 באוקטובר וימי מסחג)
             { start: '2026-10-07', end: '2026-10-07', title: '🕯️ טקס זיכרון לטבח השביעי באוקטובר', type: 'holiday' },
             { start: '2026-10-11', end: '2026-10-11', title: '🚪 יום פתוח בבית המוזיקה', type: 'concert', customStyle: 'background:#e0f2fe;color:#0369a1;border:1px solid #7dd3fc;' },
             { start: '2026-10-11', end: '2026-10-11', title: '🎸 מופע חשיפה של סגל בית המוזיקה בכדורי', type: 'concert', customStyle: 'background:#ede9fe;color:#6d28d9;border:1px solid #ddd6fe;' },
@@ -466,48 +631,37 @@
             { start: '2026-10-15', end: '2026-10-15', title: '🎸 מסחג - ג\'ימבו ג\'יי, מזי כהן והדג נחש בפארק יוסי דולה', type: 'concert', customStyle: 'background:#e0e7ff;color:#3730a3;border:1px solid #c7d2fe;' },
             { start: '2026-10-18', end: '2026-10-18', title: '🎸 גיג סגל בית המוזיקה ברבין ב-10:00', type: 'concert', customStyle: 'background:#d1fae5;color:#065f46;border:1px solid #a7f3d0;' },
 
-            // קונצרט בוקר קלאסי בבית המוזיקה ב-11:30
             ...['2026-10-12', '2026-11-02', '2026-11-30', '2027-01-18', '2027-02-01', '2027-03-01', '2027-04-12', '2027-05-24', '2027-06-21'].map(d => ({
                 start: d, end: d, title: '🎻 קונצרט בוקר קלאסי בבית המוזיקה ב-11:30', type: 'concert', customStyle: 'background:#e0f2fe;color:#075985;border:1px solid #bae6fd;'
             })),
 
-            // סינמסחה - פופקורן יין וסרט ב-20:00 (סוף כל חודש מאוקטובר עד יוני בהתאם לתנאי הלו"ז)
             ...['2026-10-27', '2026-11-24', '2026-12-29', '2027-02-23', '2027-03-30', '2027-04-29', '2027-05-25', '2027-06-29'].map(d => ({
                 start: d, end: d, title: '🍿🍷 סינמסחה - פופקורן יין וסרט ב-20:00', type: 'concert', customStyle: 'background:#fdf2f8;color:#9d174d;border:1px solid #fbcfe8;'
             })),
 
-            // חנוכה
             ...['2026-11-05', '2026-11-11', '2026-11-12', '2026-11-18', '2026-11-19', '2026-11-25', '2026-11-26', '2026-12-01', '2026-12-03', '2026-12-05'].map(d => ({ start: d, end: d, title: '🕎 חזרות למופע חנוכה', type: 'rehearsal' })),
             { start: '2026-12-06', end: '2026-12-06', title: '🌟 הופעת נבחרת הילדים (חנוכה)', type: 'concert' },
             { start: '2026-12-30', end: '2026-12-30', title: '🎄 מופע נוביגוד של תלמידי/ות כדורי', type: 'concert', customStyle: 'background:#d1fae5;color:#065f46;border:1px solid #a7f3d0;' },
 
-            // גיבוש והכנות לאמצע שנה
             ...['2027-01-03', '2027-01-04', '2027-01-07', '2027-01-12', '2027-01-14', '2027-01-20', '2027-01-21'].map(d => ({ start: d, end: d, title: '🎵 גיבוש הכנות וחזרות למופעי אמצע שנה', type: 'rehearsal' })),
             
-            // מופעי אמצע שנה 
             ...['2027-01-24', '2027-01-25', '2027-01-26', '2027-01-27', '2027-01-28', '2027-02-01', '2027-02-02', '2027-02-03', '2027-02-04'].map(d => ({ start: d, end: d, title: '🌟 מופעי אמצע שנה', type: 'concert' })),
 
-            // שירי לוחמים 
             ...['2027-03-03', '2027-03-06', '2027-03-10', '2027-03-13', '2027-03-17', '2027-03-20', '2027-03-24', '2027-03-27', '2027-03-31', '2027-04-03', '2027-04-07', '2027-04-10', '2027-04-14', '2027-04-17'].map(d => ({ start: d, end: d, title: '🎵 חזרות שירי לוחמים', type: 'rehearsal' })),
             { start: '2027-04-01', end: '2027-04-01', title: '🎂 יום הולדת לבית המוזיקה', type: 'concert', customStyle: 'background:#fef3c7;color:#92400e;border:1px solid #fde68a;' },
             { start: '2027-04-29', end: '2027-04-30', title: '🎵 חזרה לפעילות מלאה', type: 'concert' },
 
-            // חזרות סוף שנה בחודש מאי
             ...['2027-05-02','2027-05-05','2027-05-06','2027-05-07','2027-05-09','2027-05-13','2027-05-14','2027-05-16','2027-05-17','2027-05-18','2027-05-19','2027-05-20','2027-05-21','2027-05-23','2027-05-24','2027-05-25','2027-05-26','2027-05-27','2027-05-28','2027-05-30','2027-05-31']
             .map(d => ({ start: d, end: d, title: '🎸 גיבוש, הכנות וחזרות למופע סוף שנה', type: 'rehearsal' })),
             
-            // חזרות סוף שנה בחודש יוני
             ...['2027-06-01','2027-06-02','2027-06-03','2027-06-04','2027-06-06','2027-06-07','2027-06-08','2027-06-13','2027-06-14','2027-06-15','2027-06-16','2027-06-17','2027-06-18','2027-06-20','2027-06-21','2027-06-22','2027-06-23','2027-06-24','2027-06-25','2027-06-27','2027-06-28','2027-06-29','2027-06-30']
             .map(d => ({ start: d, end: d, title: '🎸 גיבוש, הכנות וחזרות למופע סוף שנה', type: 'rehearsal' })),
             
-            // מופעי יוני סוף שנה 
             { start: '2027-06-09', end: '2027-06-09', title: '⚽ מופע סוף שנה כדורי', type: 'concert', customStyle: 'background:#e0f2fe;color:#0369a1;border:1px solid #7dd3fc;' },
             { start: '2027-06-10', end: '2027-06-10', title: '🌾 מופע שיר שירים וביכורים', type: 'concert', customStyle: 'background:#fef3c7;color:#b45309;border:1px solid #fde047;' },
 
-            // חזרות יולי 
             ...['2027-07-01', '2027-07-04', '2027-07-05', '2027-07-06', '2027-07-08', '2027-07-11', '2027-07-12', '2027-07-13', '2027-07-18', '2027-07-19', '2027-07-20', '2027-07-25', '2027-07-26', '2027-07-27'].map(d => ({ start: d, end: d, title: '🎸 חזרות למופע סוף שנה', type: 'rehearsal' })),
             
-            // מופעי יולי סוף שנה 
             { start: '2027-07-07', end: '2027-07-07', title: '🎸 מופע סוף שנה', type: 'concert', customStyle: 'background:#ffe4e6;color:#e11d48;border:1px solid #f43f5e;' },
             { start: '2027-07-14', end: '2027-07-14', title: '🎹 מופע סוף שנה', type: 'concert', customStyle: 'background:#ede9fe;color:#7c3aed;border:1px solid #8b5cf6;' },
             { start: '2027-07-15', end: '2027-07-15', title: '🥁 מופע סוף שנה', type: 'concert', customStyle: 'background:#e0f2fe;color:#0284c7;border:1px solid #38bdf8;' },
@@ -516,10 +670,8 @@
             { start: '2027-07-28', end: '2027-07-28', title: '🎶 מופע סוף שנה מקהלת נגה בבית יגאל אלון', type: 'concert', customStyle: 'background:#ede9fe;color:#5b21b6;border:1px solid #c4b5fd;' },
             { start: '2027-07-29', end: '2027-07-29', title: '🎤 מופע סוף שנה', type: 'concert', customStyle: 'background:#fce7f3;color:#db2777;border:1px solid #f472b6;' },
 
-            // אוגוסט 2027
             { start: '2027-08-13', end: '2027-08-13', title: '🎈 פסטיבל הילדים', type: 'concert', customStyle: 'background:#fef3c7;color:#b45309;border:1px solid #fde047;' },
 
-            // פתיחת שנה ואירועי אוקטובר 2027 (תשפ"ח)
             { start: '2027-10-11', end: '2027-10-11', title: '🚪 יום פתוח בבית המוזיקה', type: 'concert', customStyle: 'background:#e0f2fe;color:#0369a1;border:1px solid #7dd3fc;' },
             { start: '2027-10-11', end: '2027-10-11', title: '🎸 מופע חשיפה של סגל בית המוזיקה בכדורי', type: 'concert', customStyle: 'background:#ede9fe;color:#6d28d9;border:1px solid #ddd6fe;' },
             { start: '2027-10-12', end: '2027-10-12', title: '🚪 יום פתוח בבית המוזיקה', type: 'concert', customStyle: 'background:#e0f2fe;color:#0369a1;border:1px solid #7dd3fc;' },
@@ -530,10 +682,13 @@
         function renderCalendar() {
             const year = currDate.getFullYear();
             const month = currDate.getMonth();
-            document.getElementById('monthYearDisplay').innerText = `${monthNames[month]} ${year}`;
-            document.getElementById('monthTitleDisplay').innerText = `${monthNames[month]} ${year}`;
             
-            // הגדרת תמונת חודש
+            const hebrewMonthName = getPrimaryHebrewMonth(year, month);
+            const headerText = `${monthNames[month]} ${year} ${hebrewMonthName}`;
+            
+            document.getElementById('monthYearDisplay').innerText = headerText;
+            document.getElementById('monthTitleDisplay').innerText = headerText;
+            
             const imgElement = document.getElementById('monthImage');
             const currentImg = monthImages[month];
             if(currentImg) {
@@ -558,11 +713,12 @@
             const today = new Date();
             const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
 
-            // תאי חודש קודם
             for (let i = firstDay - 1; i >= 0; i--) {
                 const prevDayNum = prevMonthDays - i;
                 const prevDate = new Date(year, month - 1, prevDayNum);
-                const heb = getHebrewDateInfo(prevDate);
+                const dateStr = `${prevDate.getFullYear()}-${String(prevDate.getMonth()+1).padStart(2,'0')}-${String(prevDayNum).padStart(2,'0')}`;
+                const heb = getHebrewDateInfo(dateStr, prevDayNum);
+                
                 const cell = document.createElement('div');
                 cell.className = 'calendar-cell other-month';
                 cell.innerHTML = `
@@ -574,15 +730,13 @@
                 grid.appendChild(cell);
             }
 
-            // תאי החודש הנוכחי
             for (let i = 1; i <= daysInMonth; i++) {
-                const currentCellDate = new Date(year, month, i);
                 const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
                 const cell = document.createElement('div');
                 cell.className = 'calendar-cell hover-trigger';
                 if(dateStr === todayStr) cell.classList.add('today');
 
-                const heb = getHebrewDateInfo(currentCellDate);
+                const heb = getHebrewDateInfo(dateStr, i);
 
                 let html = `
                     <div class="flex justify-between items-baseline mb-1">
@@ -604,12 +758,13 @@
                 grid.appendChild(cell);
             }
 
-            // תאי חודש הבא
             const totalCells = firstDay + daysInMonth;
             const remaining = (7 - (totalCells % 7)) % 7;
             for (let i = 1; i <= remaining; i++) {
                 const nextDate = new Date(year, month + 1, i);
-                const heb = getHebrewDateInfo(nextDate);
+                const dateStr = `${nextDate.getFullYear()}-${String(nextDate.getMonth()+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+                const heb = getHebrewDateInfo(dateStr, i);
+                
                 const cell = document.createElement('div');
                 cell.className = 'calendar-cell other-month';
                 cell.innerHTML = `
